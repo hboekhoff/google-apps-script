@@ -1,0 +1,79 @@
+﻿<style>
+body {
+  font:normal 13px arial,sans-serif;
+  height:100vh;
+  margin: 0 8px;
+}
+form {
+  height:100%;
+  display:flex;
+  flex-direction:column;
+}
+
+p {
+  width:100%;
+  margin:10px 0;
+  display:grid;
+  grid-template-columns: 30% auto;
+  grid-column-gap:1em;
+  justify-items:stretch;
+}
+p.checkbox {
+  grid-template-columns: 30% 1em auto;
+}
+p.buttons {
+  display:inline;
+}
+
+label {
+  grid-column-start:1;
+  text-overflow: ellipsis;
+  overflow:hidden;
+  width:100%;
+   white-space:nowrap;
+}
+.checkbox input+label {
+  grid-column-start:3;
+  white-space:normal;
+}
+
+.fields {
+  overflow:auto;
+  padding-right:10px;
+}
+
+.text {
+}
+.text input, .selection select {
+  grid-column-start:2;
+}
+.checkbox input {
+  grid-column-start:2;
+  justify-self:start;
+  align-self:start;
+  transform:scale(1.5);
+  margin-top:0.3em;
+}
+.text span, .selection span {
+  grid-column-start:2;
+}
+
+.small {
+  font-size:0.85em;
+  color:#888;
+  font-style:italic;
+  min-height:1em;
+}
+
+.buttons input {
+  width:8em;
+  float:right;
+  margin-left:15px;
+  height: 2.2em;
+}
+
+.devmode {
+  color: #e00;
+}
+
+</style>

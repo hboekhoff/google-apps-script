@@ -1,0 +1,33 @@
+﻿<script>
+$(document).ready(function(){
+  
+  $('#okButton').click(function() {
+     $("#okButton").prop("disabled",true);
+     var data = [];
+     $("form input[type!=button][type!=checkbox]").each(function(){
+         var f = $(this);
+         data.push({'name':f.attr('name'),'value':f.val()});
+       });
+     $("form input[type=checkbox]").each(function(){
+         var f = $(this);
+         data.push({'name':f.attr('name'),'value':f.is(':checked')});
+       });
+     $("form select").each(function(){
+         var f = $(this);
+         data.push({'name':f.attr('name'),'value':f.val(),'label':f.find('option:selected').text()});
+       });
+
+    google.script.run
+      //.withSuccessHandler(function(r){google.script.host.close();})
+      .propertyDialogOnOkButton(data,customHandler); 
+    window.setTimeout(function(){google.script.host.close();}, 500);
+  });
+  
+  $('#cancelButton').click(function() {
+    google.script.run.propertyDialogOnCancelButton();
+    window.setTimeout(function(){google.script.host.close();}, 500);
+  });
+  
+});
+
+</script>
