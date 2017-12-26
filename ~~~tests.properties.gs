@@ -1,4 +1,4 @@
-﻿var test_properties = new Properties(
+var test_properties = new Properties(
   new Property('hallo','Hallo', '123', 'dies ist der Hallo-Wert'),
   new Property('listtest','Liste','k',
                [{value:'a',label:'AAA',group:'ga'},

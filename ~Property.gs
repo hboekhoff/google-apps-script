@@ -1,4 +1,4 @@
-﻿/**  
+/**  
  *  Property class provides an alternative way to handle document properties
  *  Bundled with the property-dialog they are easily displayed and editable.
  *  Each Property defines a name (the actual internal name of the document-property),

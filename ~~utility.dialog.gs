@@ -1,4 +1,4 @@
-﻿function getHashCode(data){
+function getHashCode(data){
   var sdata = JSON.stringify(data);
   if (sdata.length == 0) return 0;
 

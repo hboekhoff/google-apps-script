@@ -1,4 +1,4 @@
-﻿function Properties() {
+function Properties() {
   var arr = isArray(this)? this : [];
   arr.push.apply(arr, arguments);
   arr._internalMap = arr.reduce(function(m,p){

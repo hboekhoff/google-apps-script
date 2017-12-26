@@ -1,4 +1,4 @@
-﻿function formatDate(d,f) {
+function formatDate(d,f) {
   return Utilities.formatDate(new Date(d), Session.getScriptTimeZone(), f);
 }
 function formatSecondsToHHmm(s) {
