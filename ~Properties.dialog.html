@@ -14,9 +14,9 @@
           var name = data.properties[cnt].name;
           var label = data.properties[cnt].label;
           var description = data.properties[cnt].description;
-          var value = data.properties[cnt].rawValue||data.properties[cnt].defaultValue;
+          var value = data.properties[cnt].value;
           var typeInfo = data.properties[cnt].type;
-          var dev = !data.properties[cnt].allowInputDialog;
+          var dev = !data.properties[cnt].isVisible;
           switch(typeInfo.type) { 
              case 'text':
              case 'color':
@@ -41,7 +41,7 @@
                renderRange(name,label,value,description,typeInfo,dev);
                break;
              case 'select':
-               renderSelection(name,label,data.properties[cnt].get(),description,typeInfo,dev);
+               renderSelection(name,label,value,description,typeInfo,dev);
           } // switch 
         } 
       ?>

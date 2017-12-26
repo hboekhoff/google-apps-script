@@ -1,7 +1,7 @@
 ﻿function showPropertiesDialog(title, properties, customHandlerName) {
   function calculateDialogHeight(props) {
     var h = props.reduce(function(p,c){
-                           return p + (c.type.multiple && c.type.type=='select')? 153 : 51;
+                           return p + (c.type.multiple && c.type.type=='select'? 153 : 51);
                          }, 53);
     return h>563 ? 563 : h;
   }
