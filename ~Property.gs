@@ -32,8 +32,10 @@
  *            url - a text input-field that expects an URL
  *            email - a text input-field that expects an E-Mail address
  *            password - a password input-field
- *            select - a dropdown or select-list. Applied automatically if the
+ *            select - a dropdown-list. Applied automatically if the
  *                     list parameter is provided
+ *            multiple - a multi-select-list. requires a list-parameter to 
+ *                       define the lists content.
  *    description - a description, that is displayed in the edit-dialog. 
  *                  Any string, that does not match one of the types 
  *                  specified above, will be interpreted as the description
