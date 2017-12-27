@@ -37,8 +37,13 @@ function popCustomData(key,remove) {
 }
 
 function ensureFunctionName(name) {
-  if( !isUndefined(name) && name != "" && isFunction(eval(name)) ) 
-  return name;
+  try {
+    if( !isUndefined(name) && name != "" && isFunction(eval(name)) ) 
+      return name;
+  }
+  catch(e) {
+    // ignore
+  }
   return 'dummyFunction';
 }
 function dummyFunction() {
