@@ -75,7 +75,7 @@ function renderDateTime(name,label,value,description,typeInfo,dev){
 ?>
   <p class="text<?=dev? " devmode" : ""?>">
     <label for="<?=name ?>" title=<?=label ?> ><?=label ?></label>
-    <input type="<?=typeInfo.type ?>" name="<?=name ?>" id="<?=name ?>" title="Format: <?=typeInfo.format ?>" value="<?=formatDate(value, typeInfo.format) ?>"/>
+    <input type="<?=typeInfo.type ?>" name="<?=name ?>" id="<?=name ?>" title="Format: <?=typeInfo.format ?>" value="<?=new Date(value).format(typeInfo.format) ?>"/>
     <span class="small"><?=description ?></span>
   </p>
 <?

@@ -8,7 +8,8 @@ var test_properties = new Properties(
                 {value:'ae',label:'AeAeAe',group:'ga'},
                 {value:'w',label:'www',group:'ff'},
                 {value:'v',label:'VVVVVV',group:'ff'},
-                {value:'k',label:'K'}])
+                {value:'k',label:'K'}], 'multiple', 'Soek er mar een uit.'),
+  new Property('datval','Datum', new Date(), 'datetime-local', 'hier ist ein Datum')
  );
  
 function test_showProperties() {
@@ -17,5 +18,5 @@ function test_showProperties() {
 
 function test_logProperties() {
   for( var cnt = 0 ; cnt < test_properties.length ; cnt++ )
-    Logger.log(test_properties[cnt].rawValue);
+    Logger.log(test_properties[cnt].value);
 }
