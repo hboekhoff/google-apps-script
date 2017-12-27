@@ -9,7 +9,7 @@ var test_properties = new Properties(
                 {value:'w',label:'www',group:'ff'},
                 {value:'v',label:'VVVVVV',group:'ff'},
                 {value:'k',label:'K'}], 'multiple', 'Soek er mar een uit.'),
-  new Property('datval','Datum', new Date(), 'datetime-local', 'hier ist ein Datum')
+  new Property('datval','Datum', new Date(), 'datetime-local', false,'hier ist ein Datum',false)
  );
  
 function test_showProperties() {

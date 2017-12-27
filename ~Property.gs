@@ -70,9 +70,6 @@
  */
  
 function Property(name,label,defaultValue,x1,x2,x3) {
-  function setVisible(prop,visible) {
-    prop.isVisible = visible;
-  } 
   function setTypeDate(prop,type,format) {
     prop.type = {'type': type,'format':format};
   }
@@ -94,7 +91,7 @@ function Property(name,label,defaultValue,x1,x2,x3) {
       if( isUndefined(arguments[cnt]) ) 
         continue;
       else if( typeof arguments[cnt] == 'boolean' ) 
-        setVisible(arguments[cnt]);
+        prop.isVisible = arguments[cnt];
       else if( isArray(arguments[cnt]) )
         setTypeSelect(prop,arguments[cnt]);
       else if( isObject(arguments[cnt]) && !isUndefined(arguments[cnt]['max']) )
