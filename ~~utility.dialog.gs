@@ -36,16 +36,3 @@ function popCustomData(key,remove) {
   return data;
 }
 
-function ensureFunctionName(name) {
-  try {
-    if( !isUndefined(name) && name != "" && isFunction(eval(name)) ) 
-      return name;
-  }
-  catch(e) {
-    // ignore
-  }
-  return 'dummyFunction';
-}
-function dummyFunction() {
-  return true;
-}

@@ -11,3 +11,32 @@ function defineMissingMethods(dest,src) {
   }
   return dest;
 }
+function executeIfExists(functionName,thisValue,parameters) {
+  var result = {isFunction:false,
+                returnValue:null};
+  if( isUndefined(functionName) || functionName == '') return result;
+  var f;
+  try {
+    f = eval(functionName);
+    if( !isFunction(f) ) return result;
+  }
+  catch(e) {
+    return result;
+  }
+  result.isFunction = true;
+  result.returnValue = f.apply(thisValue, parameters); 
+  return result;
+}
+function ensureFunctionName(name) {
+  try {
+    if( !isUndefined(name) && name != "" && isFunction(eval(name)) ) 
+      return name;
+  }
+  catch(e) {
+    // ignore
+  }
+  return 'dummyFunction';
+}
+function dummyFunction() {
+  return true;
+}
