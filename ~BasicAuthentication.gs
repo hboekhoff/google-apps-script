@@ -11,7 +11,7 @@ Object.defineProperties(BasicAuthentication.prototype, {
     writable: false,
     configurable: false,
     value: function() {
-      return {'Authorization': 'Basic ' + Utilities.base64Encode(this.username + ':' +  this.password)};
+      return BasicAuthentication.getBasicAuthenticationHeader(this.username, this.password);
     }
   },
   authenticateAndExecute: {
@@ -19,12 +19,21 @@ Object.defineProperties(BasicAuthentication.prototype, {
     writable: false,
     configurable: false,
     value: function(connectionName,requestData,callbackName) {
-      var authHeader = getAuthenticationHeader();
-      for( var k in this.additionalHeaders )
-        authHeader[k] = this.additionalHeaders[k];
+      var authHeader = this.getAuthenticationHeader();
+      authHeader = Object.assign(authHeader, this.additionalHeaders);
 
-      var result = executeIfExists(callbackName,undefined,[requestData,authHeader]);
+      var result = executeIfExists(callbackName,null,[connectionName,requestData,authHeader]);
       return result.returnValue;
     }
   }  
+});
+Object.defineProperties(BasicAuthentication, {
+  getBasicAuthenticationHeader: {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function(username,password) {
+      return {'Authorization': 'Basic ' + Utilities.base64Encode(username + ':' + password)};
+    }
+  }
 });

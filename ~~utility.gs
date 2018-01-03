@@ -12,7 +12,7 @@ function defineMissingMethods(dest,src) {
   return dest;
 }
 function executeIfExists(functionName,thisValue,parameters) {
-  var result = {isFunction:false,
+  var result = {hasExecuted:false,
                 returnValue:null};
   if( isUndefined(functionName) || functionName == '') return result;
   var f;
@@ -23,7 +23,7 @@ function executeIfExists(functionName,thisValue,parameters) {
   catch(e) {
     return result;
   }
-  result.isFunction = true;
+  result.hasExecuted = true;
   result.returnValue = f.apply(thisValue, parameters); 
   return result;
 }

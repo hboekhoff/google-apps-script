@@ -1,4 +1,4 @@
-function Connection(url) {
+-function Connection(url) {
   this.name = this.url = url;
 }
 Object.defineProperties(Connection.prototype,{
@@ -13,20 +13,20 @@ Object.defineProperties(Connection.prototype,{
     writable: false,
     configurable: false,
     value: function(path, method, data, successHandlerName, errorHandlerName) {
-      var params = Connection.prepareRequestParameters(this.url+path, method,this.contentType,data,successHandlerName,errorHandlerName);
-
+      var params = new ConnectionRequestData(this.url,path,method,successHandlerName,errorHandlerName,data);
+      params.contentType = this.contentType;
+      
       return this.authentification
                 .authenticateAndExecute(this.name,params,'Connection.execute');
-      
     }
   },
   authentification: {
     enumerable: true,
-    writable: false,
-    configurable: true,
+    writable: true,
+    configurable: false,
     value: {
-      authenticateAndExecute: function(name,requestData,callbackName){
-        return Connection.execute(requestData,{});
+      authenticateAndExecute: function(connectionName,requestData,callbackName){
+        return Connection.execute(connectionName,requestData,{});
       }
     }
   }
@@ -37,28 +37,24 @@ Object.defineProperties(Connection,{
     enumerable: false,
     writable: false,
     configurable: true,
-    value: function(requestData,authentication) {
-      for( var k in authentication ) {
-        requestData.fetchParameters.header[k] = authentication[k];
-      }
-
-      var response = UrlFetchApp.fetch(requestData.url, 
-                                       requestData.fetchParameters);
+    value: function(connectionName,requestData,authentication) {
+      var response = UrlFetchApp.fetch(requestData.getUrl(), 
+                                       requestData.getFetchParameters(authentication));
 
       var responsecode = response.getResponseCode();
       var responsetext = response.getContentText();
 
       if( responsecode >= 200 && responsecode < 300 ) {
         var responseobj = responsetext == ''? {} : JSON.parse( responsetext );
-        var execResult = executeIfExists(requestData.successHandler,null,[responseobj,responsecode]);
-        if( execResult.isFunction )
+        var execResult = executeIfExists(requestData.successHandler,null,[connectionName,responseobj,responsecode]);
+        if( execResult.hasExecuted )
           return execResult.returnValue;
         else
           return responseobj;
       }
       else {
-        var execResult = executeIfExists(requestData.errorHandler,null,[responsetext,responsecode]);
-        if( execResult.isFunction )
+        var execResult = executeIfExists(requestData.errorHandler,null,[connectionName,responsetext,responsecode]);
+        if( execResult.hasExecuted )
           return execResult.returnValue;
         else
           throw {'responseCode': responsecode,
@@ -67,32 +63,5 @@ Object.defineProperties(Connection,{
                  'method': requestData.method };
       }
     }
-  },
-  prepareRequestData: {
-    enumerable: false,
-    writable: false,
-    configurable: false,
-    value: function(url,method,contentType,payload,successHandlerName,errorHandlerName) {
-      var params = { 
-        successHandler: successHandlerName,
-        errorHandler: errorHandlerName,
-        fetchParameters: {
-          muteHttpExceptions: true, 
-          contentType: contentType,
-          method: method,
-          headers: { Accept: contentType } 
-        }
-      };
-  
-      if( method.toLowerCase() == 'get' ) {
-        params.url = appendJsonToQueryString(url, payload);
-      }
-      else {
-        params.url = url;
-        params.fetchParameters.payload = JSON.stringify( payload );
-      } 
-      return params;
-    }
   }
-
 });

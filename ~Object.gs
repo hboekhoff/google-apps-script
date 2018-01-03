@@ -116,15 +116,16 @@ Object.defineProperties(Object.prototype,
       return getNestedValueByArray( this, arguments, 0 );
     }
   },
-  shallowCopy: {
+  assign: {
     enumerable: false,
-    writable: false,
     configurable: false,
-    value: function() {
-      var copy = {};
-      for( var k in this )
-        copy[k] = this[k];
-      return copy;
+    writable: false,
+    value: function(target /*src_1,...,src_n*/ ) {
+      for( var cnt = 1 ; cnt < arguments.length ; cnt++ )
+        if( !isUndefined(arguments[cnt]) )
+          for( var k in arguments[cnt] )
+            target[k] = arguments[cnt][k];
+      return target;
     }
   }
 });
