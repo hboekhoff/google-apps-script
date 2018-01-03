@@ -1,0 +1,33 @@
+﻿<script>
+
+$(document).ready(function(){
+
+  $('#okButton').click(function() {
+     $("#okButton").prop("disabled",true);
+    var usr = $('#username').val();
+    var pass = $('#password').val();
+    var persist = $('#savepermanent').prop('checked');
+
+    google.script.run
+      .withSuccessHandler(function(r){
+                if( r ) {
+                  google.script.run.loginDialogOnSuccess(data.context,persist,data.resumeHandler,data.customData);
+                  window.setTimeout(function(){google.script.host.close();}, 500);
+                }
+                else {
+                  $('#username').addClass('wrong');
+                  $('#password').addClass('wrong');
+                  $("#okButton").prop("disabled",false);
+                } 
+              })
+      .loginDialogOnOkButton(data.context,usr,pass,data.checkHandler,data.customData); 
+  });
+  
+  $('#cancelButton').click(function() {
+    google.script.run.loginDialogOnCancelButton(data.context,data.abortHandler,data.customData);
+    window.setTimeout(function(){google.script.host.close();}, 500);
+  });
+  
+});
+
+  </script>

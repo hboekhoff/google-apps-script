@@ -11,7 +11,7 @@ Object.defineProperties(BasicAuthentication.prototype, {
     writable: false,
     configurable: false,
     value: function() {
-      return {'Authorization': 'Basic ' + Utilities.base64Encode(this.username + ':' +  this.password)};
+      return BasicAuthentication.getBasicAuthenticationHeader(this.username, this.password);
     }
   },
   authenticateAndExecute: {
@@ -27,4 +27,14 @@ Object.defineProperties(BasicAuthentication.prototype, {
       return result.returnValue;
     }
   }  
+});
+Object.defineProperties(BasicAuthentication, {
+  getBasicAuthenticationHeader: {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function(username,password) {
+      return {'Authorization': 'Basic ' + Utilities.base64Encode(username + ':' + password)};
+    }
+  }
 });

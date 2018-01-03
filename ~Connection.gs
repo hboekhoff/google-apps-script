@@ -13,11 +13,10 @@ Object.defineProperties(Connection.prototype,{
     writable: false,
     configurable: false,
     value: function(path, method, data, successHandlerName, errorHandlerName) {
-      var params = Connection.prepareRequestParameters(this.url+path, method,this.contentType,data,successHandlerName,errorHandlerName);
+      var params = Connection.prepareRequestParameters(this.url,path, method,this.contentType,data,successHandlerName,errorHandlerName);
 
       return this.authentification
                 .authenticateAndExecute(this.name,params,'Connection.execute');
-      
     }
   },
   authentification: {
@@ -51,14 +50,14 @@ Object.defineProperties(Connection,{
       if( responsecode >= 200 && responsecode < 300 ) {
         var responseobj = responsetext == ''? {} : JSON.parse( responsetext );
         var execResult = executeIfExists(requestData.successHandler,null,[responseobj,responsecode]);
-        if( execResult.isFunction )
+        if( execResult.hasExecuted )
           return execResult.returnValue;
         else
           return responseobj;
       }
       else {
         var execResult = executeIfExists(requestData.errorHandler,null,[responsetext,responsecode]);
-        if( execResult.isFunction )
+        if( execResult.hasExecuted )
           return execResult.returnValue;
         else
           throw {'responseCode': responsecode,
@@ -68,12 +67,13 @@ Object.defineProperties(Connection,{
       }
     }
   },
-  prepareRequestData: {
+  prepareRequestParameters: {
     enumerable: false,
     writable: false,
     configurable: false,
-    value: function(url,method,contentType,payload,successHandlerName,errorHandlerName) {
+    value: function(baseUrl,path,method,contentType,payload,successHandlerName,errorHandlerName) {
       var params = { 
+        baseUrl: baseUrl,
         successHandler: successHandlerName,
         errorHandler: errorHandlerName,
         fetchParameters: {
@@ -85,12 +85,12 @@ Object.defineProperties(Connection,{
       };
   
       if( method.toLowerCase() == 'get' ) {
-        params.url = appendJsonToQueryString(url, payload);
+        params.path = appendJsonToQueryString(path, payload);
       }
       else {
-        params.url = url;
+        params.path = path;
         params.fetchParameters.payload = JSON.stringify( payload );
-      } 
+      }
       return params;
     }
   }
