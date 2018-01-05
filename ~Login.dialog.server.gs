@@ -48,6 +48,7 @@ function loginDialogOnSuccess(context,persist,resumeHandler,cachekey) {
     customData = JSON.parse(customData);
 
   executeIfExists(resumeHandler,null,[context,user,password,persist,customData]);
+
   CacheService.getUserCache().removeAll([cachekey,cachekey+'u',cachekey+'p']);
 }
 function loginDialogOnCancelButton(context,abortHandler,cachekey) {
@@ -57,5 +58,5 @@ function loginDialogOnCancelButton(context,abortHandler,cachekey) {
   if( !isUndefined(customData) )
     customData = JSON.parse(customData);
 
-  executeIfExists(abortHandler,nullß,[context,customData]);
+  executeIfExists(abortHandler,null,[context,customData]);
 }

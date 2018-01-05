@@ -1,4 +1,4 @@
--function Connection(url) {
+function Connection(url) {
   this.name = this.url = url;
 }
 Object.defineProperties(Connection.prototype,{
