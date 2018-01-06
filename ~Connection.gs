@@ -1,5 +1,6 @@
-function Connection(url) {
+function Connection(url,headers) {
   this.name = this.url = url;
+  this.headers = headers || {};
 }
 Object.defineProperties(Connection.prototype,{
   contentType: {
@@ -13,11 +14,14 @@ Object.defineProperties(Connection.prototype,{
     writable: false,
     configurable: false,
     value: function(path, method, data, successHandlerName, errorHandlerName) {
-      var params = new ConnectionRequestData(this.url,path,method,successHandlerName,errorHandlerName,data);
+      var params = new ConnectionRequestData(this.url,path,method,
+                                             successHandlerName,
+                                             errorHandlerName,
+                                             data,this.headers);
       params.contentType = this.contentType;
       
       return this.authentification
-                .authenticateAndExecute(this.name,params,'Connection.execute');
+                .authentifyAndExecute(this.name,params,'Connection.execute');
     }
   },
   authentification: {
@@ -25,7 +29,7 @@ Object.defineProperties(Connection.prototype,{
     writable: true,
     configurable: false,
     value: {
-      authenticateAndExecute: function(connectionName,requestData,callbackName){
+      authentifyAndExecute: function(connectionName,requestData,callbackName){
         return Connection.execute(connectionName,requestData,{});
       }
     }
@@ -36,10 +40,12 @@ Object.defineProperties(Connection,{
   execute: {
     enumerable: false,
     writable: false,
-    configurable: true,
-    value: function(connectionName,requestData,authentication) {
-      var response = UrlFetchApp.fetch(requestData.getUrl(), 
-                                       requestData.getFetchParameters(authentication));
+    configurable: false,
+    value: function(connectionName,requestData,authentification) {
+      // requestData may not be of type ConnectionRequestData. So use Function.prototype.apply() 
+      var url = ConnectionRequestData.prototype.getUrl.apply(requestData);
+      var fetchparams = ConnectionRequestData.prototype.getFetchParameters.apply(requestData,[authentification]);
+      var response = UrlFetchApp.fetch(url, fetchparams);
 
       var responsecode = response.getResponseCode();
       var responsetext = response.getContentText();

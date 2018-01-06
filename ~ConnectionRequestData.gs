@@ -1,11 +1,11 @@
-function ConnectionRequestData(baseUrl, path, method, successHandlerName, errorHandlerName, payload) {
+function ConnectionRequestData(baseUrl, path, method, successHandlerName, errorHandlerName, payload, headers) {
   this.baseUrl = baseUrl;
   this.path = path || '';
   this.method = method || this.method;
   this.successHandlerName = successHandlerName;
   this.errorHandlerName = errorHandlername;
   this.payload = payload;
-  this.headers = {};
+  this.headers = headers || {};
 }
 
 Object.defineProperties(ConnectionRequestData.prototype,{
@@ -65,6 +65,14 @@ Object.defineProperties(ConnectionRequestData.prototype,{
     enumerable: false,
     value: function() {
       this.headers = {};
+    }
+  },
+  setAllHeaders: {
+    writable: false,
+    configurable: false,
+    enumerable: false,
+    value: function(newheaders) {
+      this.headers = Object.assign(this.headers,newheaders);
     }
   },
   getUrl: {

@@ -1,16 +1,16 @@
-/* var harvestAuthentication = 
-          new PriateTokenAuthentication('...',
-                                      { 'Harvest-Account-Id': '...',
-                                        'User-Agent': '...' 
-                                      }
-                                     );
+/* var harvestAuthentification = 
+          new PrivateTokenAuthentification('...',
+                                           { 'Harvest-Account-Id': '...',
+                                             'User-Agent': '...' 
+                                           }
+                                          );
 */
-function PrivateTokenAuthentication(accessToken,additionalHeaders) {
+function PrivateTokenAuthentification(accessToken,additionalHeaders) {
   this.accessToken = accessToken;
   this.additionalHeaders = additionalHeaders || {};
 }
-Object.defineProperties(PrivateTokenAuthentication.prototype, {
-  getAuthenticationHeader: {
+Object.defineProperties(PrivateTokenAuthentification.prototype, {
+  getAuthentificationHeader: {
     enumerable: false,
     writable: false,
     configurable: false,
@@ -18,12 +18,12 @@ Object.defineProperties(PrivateTokenAuthentication.prototype, {
       return { 'Authorization': 'Bearer ' + this.accessToken };
     }
   },
-  authenticateAndExecute: {
+  authentifyAndExecute: {
     enumerable: false,
     writable: false,
     configurable: false,
     value: function(connectionName,requestData,callbackName) {
-      var authHeader = getAuthenticationHeader();
+      var authHeader = getAuthentificationHeader();
       authHeader = Object.assign(authHeader, this.additionalHeaders);
 
       var result = executeIfExists(callbackName,undefined,[connectionName,requestData,authHeader]);

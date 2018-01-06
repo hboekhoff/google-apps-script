@@ -1,25 +1,25 @@
-/* var jiraConnection = new BasicAuthentication('hans','123456');
+/* var jiraConnection = new BasicAuthentification('hans','123456');
 */
-function BasicAuthentication(username,password,additionalHeaders) {
+function BasicAuthentification(username,password,additionalHeaders) {
   this.username = username;
   this.password = this.password;
   this.additionalHeaders = additionalHeaders || {};
 }
-Object.defineProperties(BasicAuthentication.prototype, {
-  getAuthenticationHeader: {
+Object.defineProperties(BasicAuthentification.prototype, {
+  getAuthentificationHeader: {
     enumerable: false,
     writable: false,
     configurable: false,
     value: function() {
-      return BasicAuthentication.getBasicAuthenticationHeader(this.username, this.password);
+      return BasicAuthentification.getBasicAuthentificationHeader(this.username, this.password);
     }
   },
-  authenticateAndExecute: {
+  authentifyAndExecute: {
     enumerable: false,
     writable: false,
     configurable: false,
     value: function(connectionName,requestData,callbackName) {
-      var authHeader = this.getAuthenticationHeader();
+      var authHeader = this.getAuthentificationHeader();
       authHeader = Object.assign(authHeader, this.additionalHeaders);
 
       var result = executeIfExists(callbackName,null,[connectionName,requestData,authHeader]);
@@ -27,8 +27,8 @@ Object.defineProperties(BasicAuthentication.prototype, {
     }
   }  
 });
-Object.defineProperties(BasicAuthentication, {
-  getBasicAuthenticationHeader: {
+Object.defineProperties(BasicAuthentification, {
+  getBasicAuthentificationHeader: {
     enumerable: false,
     writable: false,
     configurable: false,
