@@ -84,7 +84,6 @@ Object.defineProperties(ConnectionRequestData.prototype,{
       return (this.method.toLowerCase() == 'get')? 
                 appendJsonToQueryString(url,this.payload) :
                 url;
-      }
     }
   },
   getFetchParameters: {
