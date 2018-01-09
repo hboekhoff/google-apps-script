@@ -23,7 +23,7 @@ function LogData() {
   if(!Globals.DEVELOPER_MODE && !args.force) return;
 
   if( isUndefined(args.key) )
-    args.key = 'Funktion: ' + getCallerFunction(1) + '()';
+    args.key = getCallPosition(1);
 
   var d = {};
   d[args.key] = args.data;

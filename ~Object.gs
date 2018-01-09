@@ -127,5 +127,47 @@ Object.defineProperties(Object.prototype,
             target[k] = arguments[cnt][k];
       return target;
     }
+  },
+  toQueryString: {
+  	enumerable: false,
+  	configurable: false,
+  	writable: false,
+  	value: function(encode) {
+		  function nestedObjectToString(data,encode) {
+		    if( encode )
+			    return encodeURIComponent(JSON.stringify(data));
+			  else
+			    return JSON.stringify(data);
+		  }
+		  function joinArray(key,data,encode) {
+		    if( data.length = 0 ) 
+		    	return '';
+				else if( encode ) 
+			    return data.reduce( function(a,c){a += '&'+key+'='+encodeURIComponent(c);}, '' )
+			    					 .substring(2+key.length);
+			  else 
+					return data.join('&'+key+'=');
+			  
+		  }
+		  
+		  if( isUndefined(encode) ) encode = true;
+		  
+		  var result = '';
+		  for( var key in this ) {
+		    result += "&" + key;
+		    var value = this[key];
+		    if( !isUndefined(value) ) {
+		      if( isArray(value) )
+		        result += "=" + joinArray(key,value,encode)
+		      else if( isObject(value) )
+		        result += "=" + nestedObjectToString(value,encode);
+		      else if( encode )
+		        result += "=" + encodeURIComponent(value);
+		      else 
+		        result += "=" + value;
+		    }
+		  }
+	  	return result.substring(1);
+		}
   }
 });

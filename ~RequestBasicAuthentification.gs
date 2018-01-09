@@ -15,9 +15,9 @@ Object.defineProperties(RequestBasicAuthentification.prototype, {
         var authHeader = BasicAuthentification.getBasicAuthentificationHeader(username,password);
         authHeader = Object.assign(authHeader, additionalHeaders);
   
-        var result = executeIfExisits(callbackName,
-                                      null,
-                                      [connectionName, requestData, authHeader]); 
+        var result = executeIfExists(callbackName,
+                                     null,
+                                     [connectionName, requestData, authHeader]); 
         return result.returnValue;
       }
 
@@ -45,7 +45,7 @@ Object.defineProperties(RequestBasicAuthentification.prototype, {
                       'RequestBasicAuthentification.resumeLoginDialog',
                       'RequestBasicAuthentification.abortLoginDialog',
                       'RequestBasicAuthentification.checkLoginData',
-                      username,
+                      !isUndefined(auth)? auth.username : null,
                       customData);
 
       return undefined; // everything is asynchronous now
@@ -119,11 +119,13 @@ Object.defineProperties(RequestBasicAuthentification, {
       var requestData = new ConnectionRequestData(customData.requestData.baseUrl, 
                                                   customData.checkLoginPath, 
                                                   'get');
-      requestData.setAllHeaders(customData.requestData.getAllHeaders());
+
+      requestData.setAllHeaders(customData.requestData.headers);
       requestData.setAllHeaders(customData.additionalHeaders);
       requestData.setAllHeaders(authHeader);
       
       var response = UrlFetchApp.fetch(requestData.getUrl(), requestData.getFetchParameters());
+
       return response.getResponseCode() == 200;
     }
   },
@@ -152,7 +154,6 @@ Object.defineProperties(RequestBasicAuthentification, {
     enumerable: false,
     configurable: false,
     value: function(connectionName,customData) {
-      
     }
   }  
 });

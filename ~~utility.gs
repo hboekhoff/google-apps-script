@@ -21,6 +21,7 @@ function executeIfExists(functionName,thisValue,parameters) {
     if( !isFunction(f) ) return result;
   }
   catch(e) {
+    LogData({functionName:functionName,message:e});
     return result;
   }
   result.hasExecuted = true;
@@ -40,16 +41,20 @@ function ensureFunctionName(name) {
 function dummyFunction() {
   return true;
 }
-function getCallerFunction(up) {
+function getCallPosition(up) {
   try{
     var x = x.run(); // force exception with stacktrace
   }
   catch(e) {
+//LogData('stacktrace',e.stack.split('\n'));  
+    return e.stack.split('\n')[(up || 0)+1];
+/*
     up = (up || 0)+1;
     var off = e.stack.indexOf('(');
     while( off > 0 && up-- > 0 ) 
       off = e.stack.indexOf('(',off+1);
     if( off > 0 )
       return e.stack.substring(off+1,e.stack.indexOf(')',off+1));
+*/
   }
 }

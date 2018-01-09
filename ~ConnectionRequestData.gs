@@ -3,7 +3,7 @@ function ConnectionRequestData(baseUrl, path, method, successHandlerName, errorH
   this.path = path || '';
   this.method = method || this.method;
   this.successHandlerName = successHandlerName;
-  this.errorHandlerName = errorHandlername;
+  this.errorHandlerName = errorHandlerName;
   this.payload = payload;
   this.headers = headers || {};
 }
@@ -80,9 +80,23 @@ Object.defineProperties(ConnectionRequestData.prototype,{
     configurable: false,
     enumerable: false,
     value: function() {
-      var url = this.baseUrl + path;
+      function appendJsonToUrl(url, data, encode) {
+        if( isUndefined(data) ) 
+          return url;
+          
+        var params = data.toQueryString(encode);
+      
+        if( params.length == 0 ) 
+          return url;
+        else if( url.indexOf("?") > 0 )
+          return url + "&" + params;
+        else
+          return url + "?" + params;
+      }
+    
+      var url = this.baseUrl + this.path;
       return (this.method.toLowerCase() == 'get')? 
-                appendJsonToQueryString(url,this.payload) :
+                appendJsonToUrl(url,this.payload) :
                 url;
     }
   },
@@ -98,7 +112,7 @@ Object.defineProperties(ConnectionRequestData.prototype,{
         'muteHttpExceptions': this.muteHttpExceptions
       };
       params.headers['Accept'] = this.contentType;
-      params.headers = Object.assign(params.headers, additionalHeaders[k]);
+      params.headers = Object.assign(params.headers, additionalHeaders);
 
       if( this.method.toLowerCase() != 'get' )
         params.payload = JSON.stringify(this.payload);
