@@ -40,3 +40,16 @@ function ensureFunctionName(name) {
 function dummyFunction() {
   return true;
 }
+function getCallerFunction(up) {
+  try{
+    var x = x.run(); // force exception with stacktrace
+  }
+  catch(e) {
+    up = (up || 0)+1;
+    var off = e.stack.indexOf('(');
+    while( off > 0 && up-- > 0 ) 
+      off = e.stack.indexOf('(',off+1);
+    if( off > 0 )
+      return e.stack.substring(off+1,e.stack.indexOf(')',off+1));
+  }
+}
