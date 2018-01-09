@@ -64,18 +64,19 @@ Object.defineProperties(Output,{
             var val = o[k];
             if(( isObject(val) || isArray(val) ) &&
                 history.indexOf(val) == -1 ) 
-              getMaxDepthRecursive(val,t+2);
+              getMaxDepthRecursive(val,t+1);
           }
           history.pop();
         }
 
-        if( isObject(o) || isArray(o) ) getMaxDepthRecursive(o,2);
+        if( isObject(o) || isArray(o) ) getMaxDepthRecursive(o,1);
 
-        return maxdepth;
+        return maxdepth + 1;
       }
       function prepareDataArray(obj,maxcols,row,col) {
         for( k in obj ) {
-          if(row == dataArray.length) dataArray.push(new Array(maxcols));
+        var a = [];
+          if(row == dataArray.length) dataArray.push(new Array(maxcols).fill(''));
           dataArray[row][col] = k;
           if(col+1 < maxcols) {
             var val = obj[k];
@@ -93,7 +94,6 @@ Object.defineProperties(Output,{
         return row;
       }
       
-      
       if( isUndefined(row) || isUndefined(col) ) {
         var r = sheet.getDataRange();
         row = r.getLastRow()+1;
@@ -108,58 +108,3 @@ Object.defineProperties(Output,{
     }
   }
 });
-
-
-//function LogData([key,] data [,sheet] [,force])
-function LogData(key,data,sheet,force) {
-  function resolveArguments(args) {
-    var param;
-    if( args.length == 1 ) {
-      param = [undefined,args[0],undefined,undefined];
-    }
-    else if( args.length >= 4 ) {
-      param = [key,data,sheet,force];
-    }
-    else if( args.length == 3 ) {
-      if( !isString(key) )
-        param = [undefined,key,data,sheet];
-      else if( typeof sheet == 'boolean' )
-        param = [key,data,undefined,sheet];
-      else
-        param = [key,data,sheet,undefined];
-    }
-    else {
-      if( !isString(key) && typeof data == 'boolean')
-        param = [undefined,key,undefined,data];
-      else if( !isString(key) )  
-        param = [undefined,key,data,undefined];
-      else 
-        param = [key,data,undefined,undefined];
-    }
-    return param;
-  }
-
-  var args = resolveArguments(arguments);
-  key = args[0] || 'Funktion: ' + getCallerFunction(1) + '()';
-  data = args[1];
-  sheet = args[2];
-  force = args[3];
-
-  if(!Globals.DEVELOPER_MODE && !force) return;
-  
-  function getSheet() {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Log');  
-    if( isUndefined(sheet) )
-      sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet('Log');
-
-    return sheet;
-  }
-
-  var d = {};
-  var d2 = {};
-  d2[key]=data;
-  d[new Date().toString()] = d2;
-  
-  writeObject(d, sheet || getSheet());
-}
-
