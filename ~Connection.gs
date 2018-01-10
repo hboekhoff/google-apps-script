@@ -19,7 +19,6 @@ Object.defineProperties(Connection.prototype,{
                                              errorHandlerName,
                                              data,this.headers);
       params.contentType = this.contentType;
-      
       return this.authentification
                 .authentifyAndExecute(this.name,params,'Connection.execute');
     }
@@ -52,21 +51,21 @@ Object.defineProperties(Connection,{
 
       if( responsecode >= 200 && responsecode < 300 ) {
         var responseobj = responsetext == ''? {} : JSON.parse( responsetext );
-        var execResult = executeIfExists(requestData.successHandler,null,[connectionName,responseobj,responsecode]);
+        var execResult = executeIfExists(requestData.successHandlerName,null,[connectionName,responsecode,responseobj]);
         if( execResult.hasExecuted )
           return execResult.returnValue;
         else
           return responseobj;
       }
       else {
-        var execResult = executeIfExists(requestData.errorHandler,null,[connectionName,responsetext,responsecode]);
+        var execResult = executeIfExists(requestData.errorHandlerName,null,[connectionName,responsecode,responsetext]);
         if( execResult.hasExecuted )
           return execResult.returnValue;
         else
           throw {'responseCode': responsecode,
                  'message': responsetext,
                  'url': requestData.url,
-                 'method': requestData.method };
+                 'method': requestData.method};
       }
     }
   }

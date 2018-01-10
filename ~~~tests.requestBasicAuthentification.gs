@@ -4,7 +4,7 @@ function test_requestBasicAuthentification() {
   var additionalHeaders;
   var rba = new RequestBasicAuthentification(checkLoginPath,additionalHeaders);
 
-  var connectionName = 'test_requestBasicAuthentification';
+  var connectionName = 'test_requestBasicAuthentificatiodnadd7d';
   var requestData = new ConnectionRequestData('https://sjira.funkemedien.de/',
                                               'rest/api/2/issue/FDC-1000',
                                               'get',

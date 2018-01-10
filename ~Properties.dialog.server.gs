@@ -20,7 +20,7 @@ function showPropertiesDialog(title, properties, customHandlerName) {
   var dialog = HtmlService.createTemplateFromFile('~Properties.dialog');
   
   dialog.data = {'properties':properties};
-  dialog.customHandler = ensureFunctionName(customHandlerName);
+  dialog.customHandler = customHandlerName;
   
   dialog = dialog.evaluate()
     .setWidth(500)
@@ -32,8 +32,8 @@ function showPropertiesDialog(title, properties, customHandlerName) {
 function propertyDialogOnCancelButton() {
 }
 function propertyDialogOnOkButton(data, customHandlerName) {
-  if( !eval(customHandlerName)(data) )
-    return;
+  var r = executeIfExists(customHandlerName,null,[data]);
+  if( r.hasExecuted && r.returnValue == false ) return;
 
   var tempProp = new Property();
   for( var cnt = 0 ; cnt < data.length ; cnt++ ) {

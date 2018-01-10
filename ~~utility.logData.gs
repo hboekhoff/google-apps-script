@@ -29,7 +29,7 @@ function LogData() {
   d[args.key] = args.data;
   var d2 = {};
   d2[new Date().toString()] = d;
-  
+
   Output.writeObject(d2, args.sheet || getLoggingSheet());
 }
 

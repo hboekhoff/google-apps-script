@@ -99,7 +99,7 @@ Object.defineProperties(Output,{
         row = r.getLastRow()+1;
         col = 1;
       }
-      
+
       maxcols = getMaxDepth(obj);
       if( 0 == prepareDataArray(obj,maxcols,0,0) )
         return;

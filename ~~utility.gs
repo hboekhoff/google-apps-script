@@ -18,43 +18,27 @@ function executeIfExists(functionName,thisValue,parameters) {
   var f;
   try {
     f = eval(functionName);
-    if( !isFunction(f) ) return result;
+    if( !isFunction(f) ) 
+      return result;
   }
   catch(e) {
-    LogData({functionName:functionName,message:e});
-    return result;
+    LogData('executeIfExists - not executed',{functionName:functionName,message:e});
   }
-  result.hasExecuted = true;
-  result.returnValue = f.apply(thisValue, parameters); 
-  return result;
-}
-function ensureFunctionName(name) {
   try {
-    if( !isUndefined(name) && name != "" && isFunction(eval(name)) ) 
-      return name;
+    result.hasExecuted = true;
+    result.returnValue = f.apply(thisValue, parameters); 
   }
   catch(e) {
-    // ignore
+    LogData('executeIfExists - execution error',{functionName:functionName,message:e});
+    throw e;
   }
-  return 'dummyFunction';
-}
-function dummyFunction() {
-  return true;
+  return result;
 }
 function getCallPosition(up) {
   try{
-    var x = x.run(); // force exception with stacktrace
+    throw new Error();
   }
   catch(e) {
-//LogData('stacktrace',e.stack.split('\n'));  
-    return e.stack.split('\n')[(up || 0)+1];
-/*
-    up = (up || 0)+1;
-    var off = e.stack.indexOf('(');
-    while( off > 0 && up-- > 0 ) 
-      off = e.stack.indexOf('(',off+1);
-    if( off > 0 )
-      return e.stack.substring(off+1,e.stack.indexOf(')',off+1));
-*/
+    return e.stack.split('\n')[(up || 0)+1].trim();
   }
 }

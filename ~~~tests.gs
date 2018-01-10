@@ -1,5 +1,21 @@
+function outer() {
+  try {
+    evaltest();
+  }
+  catch(e) {
+    Logger.log(e.stack);
+  }
+}
 function evaltest() {
-  
+  try {
+    throw new Error();
+    var x = x.run();
+  }
+  catch(e) {
+    Logger.log(e.stack);
+    Logger.log(JSON.stringify(e));
+    throw e;
+  }
 }
 
 Object.defineProperty(evaltest,'testfunction',{
@@ -10,9 +26,3 @@ Object.defineProperty(evaltest,'testfunction',{
                       });
                       
                       
-function test222() {
-  evaltest.testfunction();
-  Logger.log(ensureFunctionName('evalest.testfunction'));
-  
-
-}

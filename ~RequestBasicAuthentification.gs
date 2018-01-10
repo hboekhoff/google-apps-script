@@ -40,7 +40,7 @@ Object.defineProperties(RequestBasicAuthentification.prototype, {
         RequestBasicAuthentification.writeCache(connectionName,auth.username,auth.password);
         return execute(auth.username, auth.password, this.additionalHeaders);
       }
-        
+
       showLoginDialog(connectionName,
                       'RequestBasicAuthentification.resumeLoginDialog',
                       'RequestBasicAuthentification.abortLoginDialog',
@@ -143,9 +143,9 @@ Object.defineProperties(RequestBasicAuthentification, {
       var authHeader = BasicAuthentification.getBasicAuthentificationHeader(username,password);
       authHeader = Object.assign(authHeader, customData.additionalHeaders);
 
-      var result = executeIfExisits(customData.callbackName,
-                                    null,
-                                    [connectionName, customData.requestData, authHeader]); 
+      var result = executeIfExists(customData.callback,
+                                   null,
+                                   [connectionName, customData.requestData, authHeader]); 
       return result.returnValue;
     }
   },

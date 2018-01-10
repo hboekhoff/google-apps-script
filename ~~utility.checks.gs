@@ -1,8 +1,12 @@
+function isUndefined(t){
+  return t == undefined || t == null;
+}
+
 function isObject(t) {
-  return typeof t === 'object' && t.constructor != Array; //t.length === undefined;
+  return !isUndefined(t) && typeof t == 'object' && t.constructor != Array;
 }
 function isArray(t) {
-  return !isUndefined(t) && t.constructor === Array;
+  return !isUndefined(t) && typeof t == 'object' && t.constructor == Array;
 }
 function isFunction(t) {
   return typeof t === 'function';
@@ -19,9 +23,6 @@ function isDate(d) {
          d.constructor.toString().substring(0,17) == 'function Date() {';
 }
 
-function isUndefined(t){
-  return t == undefined || t == null;
-}
 function isEmpty(obj) {
   for( var x in obj )
     return false;
