@@ -190,6 +190,14 @@ Object.defineProperties(Property.prototype,{
      return !isUndefined(this.rawValue);
     }
   },
+  hasDescription: {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function() {
+     return this.description != '';
+    }
+  }
 //  edit: {
 //    enumerable: false,
 //    writable: false,
