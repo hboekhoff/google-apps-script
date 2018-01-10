@@ -3,9 +3,7 @@ function clearPropertiesAndCaches() {
     new Property('userProperties', 'Properties', false,'checkbox', 'User Properties zurücksetzen'),
     new Property('documentProperties','',false,'checkbox', 'Document Properties zurücksetzen'),
     new Property('scriptProperties', '', false,'checkbox', 'Script Properties zurücksetzen'),
-    new Property('userCache', 'User Cache', '', 'Kommaseparierte Liste der zu löschenden Cache-Keys'),
-    new Property('documentCache', 'Document Cache', '', 'Kommaseparierte Liste der zu löschenden Cache-Keys'),
-    new Property('scriptCache', 'Script Cache', '', 'Kommaseparierte Liste der zu löschenden Cache-Keys') );
+    new Property('cache', 'Caches', '', 'Kommaseparierte Liste der zu löschenden Cache-Keys') );
 
     showPropertiesDialog('Gespeicherte Daten zurücksetzen', props, 'deletePropertiesAndCacheCallback');
 }
@@ -25,14 +23,10 @@ function deletePropertiesAndCacheCallback(props) {
         if(value == true ) PropertiesService.getScriptProperties().deleteAllProperties();
         break;
         
-      case 'userCache':
+      case 'cache':
         CacheService.getUserCache().removeAll(value.split(','));
-        break;
-      case 'documentCache':
-         CacheService.getDocumentCache().removeAll(value.split(','));
-         break;
-      case 'scriptCache':
-         CacheService.getScriptCache().removeAll(value.split(','));
+        CacheService.getDocumentCache().removeAll(value.split(','));
+        CacheService.getScriptCache().removeAll(value.split(','));
         break;
     }
   }

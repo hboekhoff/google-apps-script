@@ -22,17 +22,3 @@ function include(filename, data) {
   return result;
 }
 
-function pushCustomData(data) {
-  var key = Utilities.getUuid();
-  CacheService.getUserCache().put(key,JSON.stringify(data),3600);
-  return key;
-}
-function popCustomData(key,remove) {
-  var data = CacheService.getUserCache().get(key);
-  if( !isUndefined(data) ) {
-    data = JSON.parse(data);
-    if(remove) CacheService.getUserCache().remove(key);
-  }
-  return data;
-}
-

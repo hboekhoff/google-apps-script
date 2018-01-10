@@ -79,6 +79,14 @@ Object.defineProperties(RequestBasicAuthentification, {
                                       LOGIN_CACHE_DURATION);
     }
   },
+  clearCache: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function() {
+      CacheService.getUserCache().remove('RequestBasicAuthentification');
+    }
+  },
   readPersisted: {
     writable: false,
     enumerable: false,
