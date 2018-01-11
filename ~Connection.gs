@@ -13,11 +13,15 @@ Object.defineProperties(Connection.prototype,{
     enumerable: false,
     writable: false,
     configurable: false,
-    value: function(path, method, data, successHandlerName, errorHandlerName) {
-      var params = new ConnectionRequestData(this.url,path,method,
+    value: function(path, method, payload, successHandlerName, errorHandlerName, customData) {
+      var params = new ConnectionRequestData(this.url,
+                                             path,
+                                             method,
                                              successHandlerName,
                                              errorHandlerName,
-                                             data,this.headers);
+                                             payload,
+                                             this.headers,
+                                             customData);
       params.contentType = this.contentType;
       return this.authentification
                 .authentifyAndExecute(this.name,params,'Connection.execute');
@@ -51,14 +55,14 @@ Object.defineProperties(Connection,{
 
       if( responsecode >= 200 && responsecode < 300 ) {
         var responseobj = responsetext == ''? {} : JSON.parse( responsetext );
-        var execResult = executeIfExists(requestData.successHandlerName,null,[connectionName,responsecode,responseobj]);
+        var execResult = executeIfExists(requestData.successHandlerName,null,[connectionName,responsecode,responseobj,requestData.customData]);
         if( execResult.hasExecuted )
           return execResult.returnValue;
         else
           return responseobj;
       }
       else {
-        var execResult = executeIfExists(requestData.errorHandlerName,null,[connectionName,responsecode,responsetext]);
+        var execResult = executeIfExists(requestData.errorHandlerName,null,[connectionName,responsecode,responsetext,requestData.customData]);
         if( execResult.hasExecuted )
           return execResult.returnValue;
         else

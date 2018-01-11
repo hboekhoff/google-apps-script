@@ -1,4 +1,4 @@
-function ConnectionRequestData(baseUrl, path, method, successHandlerName, errorHandlerName, payload, headers) {
+function ConnectionRequestData(baseUrl, path, method, successHandlerName, errorHandlerName, payload, headers, customData) {
   this.baseUrl = baseUrl;
   this.path = path || '';
   this.method = method || this.method;
@@ -6,6 +6,7 @@ function ConnectionRequestData(baseUrl, path, method, successHandlerName, errorH
   this.errorHandlerName = errorHandlerName;
   this.payload = payload;
   this.headers = headers || {};
+  this.customData = customData;
 }
 
 Object.defineProperties(ConnectionRequestData.prototype,{
