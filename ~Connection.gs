@@ -27,6 +27,24 @@ Object.defineProperties(Connection.prototype,{
                 .authentifyAndExecute(this.name,params,'Connection.execute');
     }
   },
+  open: {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function(successHandlerName, errorHandlerName, customData) {
+      var params = new ConnectionRequestData(this.url,
+                                             null,
+                                             null,
+                                             successHandlerName,
+                                             errorHandlerName,
+                                             null,
+                                             this.headers,
+                                             customData);
+      params.contentType = this.contentType;
+      return this.authentification
+                .authentifyAndExecute(this.name,params,'Connection.open');
+    }
+  },
   authentification: {
     enumerable: true,
     writable: true,
@@ -71,6 +89,19 @@ Object.defineProperties(Connection,{
                  'url': requestData.url,
                  'method': requestData.method};
       }
+    }
+  },
+  open: {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function(connectionName,requestData,authentification) {
+      // requestData may not be of type ConnectionRequestData. So use Function.prototype.apply() 
+      var url = ConnectionRequestData.prototype.getUrl.apply(requestData);
+      var fetchparams = ConnectionRequestData.prototype.getFetchParameters.apply(requestData,[authentification]);
+
+      var execResult = executeIfExists(requestData.successHandlerName,null,[connectionName,requestData.customData]);
+      return execResult.returnValue;
     }
   }
 });
