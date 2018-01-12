@@ -3,7 +3,7 @@ var Globals = new function () {
   this.DEVELOPER_MODE = true;
   
   this.Properties = new Properties(
-    new Property('jiraBaseUrl','JIRA Domain','https://sjira.funkemedien.de','Domain des JIRA-Systems.')
+    new Property('jiraDomain','JIRA Domain','https://sjira.funkemedien.de','Domain des JIRA-Systems.')
   );
   
 }();

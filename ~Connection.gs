@@ -9,6 +9,13 @@ Object.defineProperties(Connection.prototype,{
     configurable: false,
     value: 'application/json'
   },
+	/*
+	*  Parameters
+	*     successHandlerName: 
+	*					successHandler(connectionName,responsecode,responseobj,customData)
+	*     errorHandlerName: 
+	*					errorHandler(connectionName,responsecode,responsetext,customData)
+	*/
   execute: {
     enumerable: false,
     writable: false,
@@ -24,9 +31,16 @@ Object.defineProperties(Connection.prototype,{
                                              customData);
       params.contentType = this.contentType;
       return this.authentification
-                .authentifyAndExecute(this.name,params,'Connection.execute');
+                .authentifyAndExecute(this.name,params,'Connection.execute','Connection.failure');
     }
   },
+	/*
+	*  Parameters
+	*     successHandlerName: 
+	*					successHandler(connectionName,customData)
+	*     errorHandlerName: 
+	*					errorHandler(connectionName,customData)
+	*/
   open: {
     enumerable: false,
     writable: false,
@@ -34,7 +48,7 @@ Object.defineProperties(Connection.prototype,{
     value: function(successHandlerName, errorHandlerName, customData) {
       var params = new ConnectionRequestData(this.url,
                                              null,
-                                             null,
+                                             'open',
                                              successHandlerName,
                                              errorHandlerName,
                                              null,
@@ -42,7 +56,7 @@ Object.defineProperties(Connection.prototype,{
                                              customData);
       params.contentType = this.contentType;
       return this.authentification
-                .authentifyAndExecute(this.name,params,'Connection.open');
+                .authentifyAndExecute(this.name,params,'Connection.open','Connection.failure');
     }
   },
   authentification: {
@@ -50,7 +64,7 @@ Object.defineProperties(Connection.prototype,{
     writable: true,
     configurable: false,
     value: {
-      authentifyAndExecute: function(connectionName,requestData,callbackName){
+      authentifyAndExecute: function(connectionName,requestData,executeCallback,failureCallback){
         return Connection.execute(connectionName,requestData,{});
       }
     }
@@ -86,9 +100,24 @@ Object.defineProperties(Connection,{
         else
           throw {'responseCode': responsecode,
                  'message': responsetext,
-                 'url': requestData.url,
+                 'url': requestData.baseUrl + requestData.path,
                  'method': requestData.method};
       }
+    }
+  },
+  failure: {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function(connectionName,requestData,messageCode,messageText) {
+      var execResult = executeIfExists(requestData.errorHandlerName,null,[connectionName,messageCode,messageText,requestData.customData]);
+      if( execResult.hasExecuted )
+        return execResult.returnValue;
+      else
+        throw {'responseCode': messageCode,
+               'message': messageText,
+               'url': requestData.baseUrl + requestData.path,
+               'method': requestData.method};
     }
   },
   open: {
@@ -101,7 +130,7 @@ Object.defineProperties(Connection,{
       var fetchparams = ConnectionRequestData.prototype.getFetchParameters.apply(requestData,[authentification]);
 
       var execResult = executeIfExists(requestData.successHandlerName,null,[connectionName,requestData.customData]);
-      return execResult.returnValue;
+      return execResult.hasExecuted? execResult.returnValue : true;
     }
   }
 });

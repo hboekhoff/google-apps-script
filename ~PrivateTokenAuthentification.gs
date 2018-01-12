@@ -22,11 +22,11 @@ Object.defineProperties(PrivateTokenAuthentification.prototype, {
     enumerable: false,
     writable: false,
     configurable: false,
-    value: function(connectionName,requestData,callbackName) {
+    value: function(connectionName,requestData,executeCallback,failureCallback) {
       var authHeader = getAuthentificationHeader();
       authHeader = Object.assign(authHeader, this.additionalHeaders);
 
-      var result = executeIfExists(callbackName,undefined,[connectionName,requestData,authHeader]);
+      var result = executeIfExists(executeCallback,undefined,[connectionName,requestData,authHeader]);
       return result.returnValue;
     }
   }  

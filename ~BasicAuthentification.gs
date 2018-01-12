@@ -18,11 +18,11 @@ Object.defineProperties(BasicAuthentification.prototype, {
     enumerable: false,
     writable: false,
     configurable: false,
-    value: function(connectionName,requestData,callbackName) {
+    value: function(connectionName,requestData,executeCallback,failureCallback) {
       var authHeader = this.getAuthentificationHeader();
       authHeader = Object.assign(authHeader, this.additionalHeaders);
 
-      var result = executeIfExists(callbackName,null,[connectionName,requestData,authHeader]);
+      var result = executeIfExists(executeCallback,null,[connectionName,requestData,authHeader]);
       return result.returnValue;
     }
   }  

@@ -9,13 +9,13 @@ Object.defineProperties(RequestBasicAuthentification.prototype, {
     enumerable: false,
     writable: false,
     configurable: false,
-    value: function(connectionName,requestData,callbackName) {
+    value: function(connectionName,requestData,executeCallback,failureCallback) {
       
       function execute(username, password, additionalHeaders) {
         var authHeader = BasicAuthentification.getBasicAuthentificationHeader(username,password);
         authHeader = Object.assign(authHeader, additionalHeaders);
   
-        var result = executeIfExists(callbackName,
+        var result = executeIfExists(executeCallback,
                                      null,
                                      [connectionName, requestData, authHeader]); 
         return result.returnValue;
@@ -29,7 +29,8 @@ Object.defineProperties(RequestBasicAuthentification.prototype, {
       var customData = {'checkLoginPath': this.checkLoginPath,
                         'additionalHeaders': this.additionalHeaders,
                         'requestData': requestData,
-                        'callback': callbackName
+                        'executeCallback': executeCallback,
+                        'failureCallback': failureCallback
                        };
       auth = RequestBasicAuthentification.readPersisted(connectionName);
       if( !isUndefined(auth) && 
@@ -151,7 +152,7 @@ Object.defineProperties(RequestBasicAuthentification, {
       var authHeader = BasicAuthentification.getBasicAuthentificationHeader(username,password);
       authHeader = Object.assign(authHeader, customData.additionalHeaders);
 
-      var result = executeIfExists(customData.callback,
+      var result = executeIfExists(customData.executeCallback,
                                    null,
                                    [connectionName, customData.requestData, authHeader]); 
       return result.returnValue;
@@ -162,6 +163,14 @@ Object.defineProperties(RequestBasicAuthentification, {
     enumerable: false,
     configurable: false,
     value: function(connectionName,customData) {
+
+      var result = executeIfExists(customData.failureCallback,
+                                   null,
+                                   [connectionName, customData.requestData, 'Login aborted by user']); 
+      return result.returnValue;
+
+
+
     }
   }  
 });

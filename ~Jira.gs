@@ -5,32 +5,52 @@ function Jira(name,auth) {
   this.connection.authentification = auth || new RequestBasicAuthentification('rest/api/2/myself');
 }
 Object.defineProperties(Jira.prototype,{
+  open: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(openedCallbackName,errorCallbackName,data) {
+    	return this.connection.open(openedCallbackName,errorCallbackName,data);
+    }
+	},
   execute: {
     writable: false,
     enumerable: false,
     configurable: false,
-    value: function(path, data, successHandlerName, errorHandlerName) {
-      var customData = {'successHandler': successHandlerName,
-                        'errorHandler': errorHandlerName};
-      return this.connection.execute(path,'get',data,'Jira.onSuccess','Jira.onError',customData);
-    }
-  }
+    value: function(path,params,fields,expand,chunkSize) {
+		  params = params || {};
+		  params['maxResults'] = params['maxResults'] || chunkSize || 1000;
+			params['expand'] = (params['expand'] || '') + ',' + (expand || ''); //+ ',names'
 
-});
-Object.defineProperties(Jira,{
-  onSuccess: {
-    enumerable: false,
-    writable: false,
-    configurable: false,
-    value: function(name,responsecode,responseobj,customData) {
-      
+			if( !isUndefined(fields) )
+		    params['fields'] = fields.names;
+
+		  var data = this.connection.execute(path, 'get', params);
+
+		  if( !isUndefined(chunkSize) ) {
+		    var chunk = data;
+		    while( chunk.startAt + chunk.maxResults < chunk.total ) {
+		      params.startAt = chunk.startAt + chunk.maxResults;
+		      chunk = Globals.JiraConnection.execute( path, 'get', params );
+		      data.issues = data.issues.concat(chunk.issues);
+		    }
+		  }
+		  return data;
     }
   },
-  onError {
-    enumerable: false,
-    writable: false,
-    configurable: false,
-    value: function(name,responsecode,responsetext,customData) {
-    }
+
+	fetchIssuesByKey: {
+		enumerable: false,
+		writable: false,
+		configurable: false,
+		value: function(keys, fields) {
+		  return this.execute('api/2/search', 
+		                      {'jql': 'issuekey in (' + keys.join() + ')'},
+		                      fields);
+		}
   }
+	
+  
 });
+
+
