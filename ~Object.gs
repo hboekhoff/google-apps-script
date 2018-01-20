@@ -1,3 +1,5 @@
+Logger.log('Object');
+
 Object.defineProperties(Object.prototype, 
   {   
   /**  getNestedValue(accessor,...)

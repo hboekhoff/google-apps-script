@@ -1,6 +1,8 @@
 function defineMissingMethods(dest,src) {
   var sp = Object.getOwnPropertyNames(src);
+Logger.log(sp);  
   var dp = Object.getOwnPropertyNames(dest);
+Logger.log(dp);  
   for( var cnt = 0 ; cnt < sp.length ; ++cnt ) {
     if( sp[cnt] != 'constructor' &&
         dp.indexOf(sp[cnt]) < 0 ) {

@@ -1,3 +1,5 @@
+Logger.log('utility.logData');
+
 //function LogData([key,] data [,sheet] [,force])
 function LogData() {
   function resolveArguments(args) {
@@ -20,7 +22,7 @@ function LogData() {
   }
   
   var args = resolveArguments(arguments);
-  if(!Globals.DEVELOPER_MODE && !args.force) return;
+  if(!DEVELOPER_MODE && !args.force) return;
 
   if( isUndefined(args.key) )
     args.key = getCallPosition(1);
@@ -30,7 +32,7 @@ function LogData() {
   var d2 = {};
   d2[new Date().toString()] = d;
 
-  Output.writeObject(d2, args.sheet || getLoggingSheet());
+  //Output.writeObject(d2, args.sheet || getLoggingSheet());
+  doWriteObject(d2, args.sheet || getLoggingSheet());
 }
 
-1
