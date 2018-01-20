@@ -1,3 +1,5 @@
+Logger.log('Property');
+
 /**  
  *  Property class provides an alternative way to handle document properties
  *  Bundled with the property-dialog they are easily displayed and editable.
@@ -13,7 +15,7 @@
  *   the other parameters are optional and can appear in any order
  *    visible - Determines if the property is displayed in the edit-dialog. 
  *              if set to false, the property is only displayed if the variable 
- *              Globals.DEVELOPER_MODE is set to true.
+ *              DEVELOPER_MODE is set to true.
  *              any boolean value will be interpreted as the visible-flag
  *              default: true 
  *    type - defines how the property is formattet in the edit-dialog

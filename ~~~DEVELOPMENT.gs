@@ -1,3 +1,19 @@
+/*  
+ *   !!!  ACHTUNG   WICHTIGER HINWEIS  !!!
+ * 
+ *  Die Ausführungsreihenfolge entspricht der Reihenfolge, in der die Dateien angelegt wurden 
+ *  bzw. der NICHT-APHABETISCH-SORTIERTEN Ansicht.
+ *  Evtl. Abhängigkeiten müssen durch Ändern der Reihenfolge aufgelöst werden. 
+ *  Dazu werden entweder Name und Inhalt zweier Dateien vertauscht oder die Dateien
+ *  in der richtigne Reihenfolge neu angelegt.
+ *
+ */
+
+// aktiviert vermehrtes Logging und in Dialogen werden zusätzliche Felder angezeigt 
+DEVELOPER_MODE = true;
+
+
+
 function DEV_clearPropertiesAndCaches() {
   var props = new Properties(
     new Property('userProperties', 'Properties', false,'checkbox', 'User Properties zurücksetzen'),

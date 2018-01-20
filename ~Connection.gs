@@ -1,5 +1,8 @@
 function Connection(url,headers) {
   this.name = this.url = url;
+  if( url.charAt(url.length-1) != '/' )
+    this.url += '/';
+    
   this.headers = headers || {};
 }
 Object.defineProperties(Connection.prototype,{
@@ -39,7 +42,7 @@ Object.defineProperties(Connection.prototype,{
 	*     successHandlerName: 
 	*					successHandler(connectionName,customData)
 	*     errorHandlerName: 
-	*					errorHandler(connectionName,customData)
+	*					errorHandler(connectionName,messageCode,messageText,customData)
 	*/
   open: {
     enumerable: false,

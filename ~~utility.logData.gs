@@ -20,7 +20,7 @@ function LogData() {
   }
   
   var args = resolveArguments(arguments);
-  if(!Globals.DEVELOPER_MODE && !args.force) return;
+  if(!DEVELOPER_MODE && !args.force) return;
 
   if( isUndefined(args.key) )
     args.key = getCallPosition(1);
@@ -32,5 +32,3 @@ function LogData() {
 
   Output.writeObject(d2, args.sheet || getLoggingSheet());
 }
-
-1
