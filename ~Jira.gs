@@ -5,6 +5,13 @@ function Jira(name,auth) {
   this.connection.authentification = auth || new RequestBasicAuthentification('rest/api/2/myself');
 }
 Object.defineProperties(Jira.prototype,{
+	/*
+	*  Parameters
+	*     openedCallbackName: 
+	*					openedCallbackName(connectionName,data)
+	*     errorCallbackName: 
+	*					errorCallbackName(connectionName,data)
+	*/
   open: {
     writable: false,
     enumerable: false,
