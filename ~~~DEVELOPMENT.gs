@@ -13,7 +13,16 @@
 DEVELOPER_MODE = true;
 
 
+function DEV_createMenu() {
+  var ui = SpreadsheetApp.getUi();
+  var menu = ui.createMenu('DEVELOPMENT')
+    .addItem('Alle Optionen...', 'DEV_editAllProperties');
 
+  menu.addToUi();
+}
+function DEV_editAllProperties() {
+  showPropertiesDialog('DEVELOPMENT - Alle Optionen', Property._allProperties);
+}
 function DEV_clearPropertiesAndCaches() {
   var props = new Properties(
     new Property('userProperties', 'Properties', false,'checkbox', 'User Properties zurücksetzen'),

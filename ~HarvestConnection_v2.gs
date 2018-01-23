@@ -56,7 +56,7 @@ Object.defineProperties(HarvestConnection_v2.prototype,{
     enumerable: false,
     configurable: false,
     value: function() {
-    
+      return this.execute('users/me');
     }
   },
   
@@ -64,15 +64,37 @@ Object.defineProperties(HarvestConnection_v2.prototype,{
     writable: false,
     enumerable: false,
     configurable: false,
-    value: function(userid) {
-      // 1. /v2/users/{USER_ID}/project_assignments
+    value: function(userid,forceRequest) {
+      var cachekey = this.name + '_Harvest_v2.projects';
+      var data;
+      
+      if( !forceRequest ) 
+        data = CacheService.getUserCache().get(cachekey);
+      if( !isUndefined(data) ) {
+        data = JSON.parse(data);
+      }
+      else {
+        var path = 'users/' + userid + '/project_assignments';
+        data = this.execute(path);
+        CacheService.getUserCache().put(cachekey,JSON.stringify(data));
+      }
+      return data;
     }
   },
   fetchTimeEntries: {
     writable: false,
     enumerable: false,
     configurable: false,
-    value: function(userid) {
+    value: function(userid,date) {
+      var path = 'time_entries';
+      var fromDate = new Date(date);
+      var toDate = new Date(date);
+      toDate.setDate(toDate.getDate() + 1);
+      return this.execute(path,
+                          {'user_id':userid,
+                          'from': fromDate.format('YYYY-MM-dd'),
+                          'to': toDate.format('YYYY-MM-dd')
+                         });
     }
   },
   updateTimeEntry: {

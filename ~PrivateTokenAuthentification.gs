@@ -23,7 +23,7 @@ Object.defineProperties(PrivateTokenAuthentification.prototype, {
     writable: false,
     configurable: false,
     value: function(connectionName,requestData,executeCallback,failureCallback) {
-      var authHeader = getAuthentificationHeader();
+      var authHeader = this.getAuthentificationHeader();
       authHeader = Object.assign(authHeader, this.additionalHeaders);
 
       var result = executeIfExists(executeCallback,undefined,[connectionName,requestData,authHeader]);

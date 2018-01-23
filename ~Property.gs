@@ -134,6 +134,8 @@ function Property(name,label,defaultValue,x1,x2,x3) {
         }
     }
   }
+  
+  Property.registerForDevMode(this);
 
   this.name = name;
   this.label = label;
@@ -208,4 +210,20 @@ Object.defineProperties(Property.prototype,{
 //      showPropertiesDialog([this]);
 //    }
 //  }
+});
+Object.defineProperties(Property,{
+  _allProperties: {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: DEVELOPER_MODE? [] : undefined
+  },
+  registerForDevMode: {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+      value: DEVELOPER_MODE? 
+              function(prop){Property._allProperties.push(prop);} :
+              function(){}
+  }
 });
