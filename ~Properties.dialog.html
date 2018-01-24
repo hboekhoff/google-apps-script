@@ -5,11 +5,11 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
     </script>
     
-    <?!= include("~Properties.dialog.css"); ?>
+    <?!= include("~common.css"); ?>
   </head>
   <body>
     <form>
-      <div class="fields">
+      <div class="fields with-labels">
       <?for(var cnt = 0 ; cnt < data.properties.length ; cnt++ ) { 
           var name = data.properties[cnt].name;
           var label = data.properties[cnt].label;
@@ -67,7 +67,7 @@ function renderInputField(name,label,value,description,typeInfo,dev){
   <p class="text<?=dev? ' devmode' : ''?>">
     <label for="<?=name ?>" title=<?=label ?> ><?=label ?></label>
     <input type="<?=typeInfo.type ?>" name="<?=name ?>" id="<?=name ?>" value="<?=value ?>"/>
-    <span class="small"><?=description ?></span>
+    <span class="description"><?=description ?></span>
   </p>
 <?
 }
@@ -76,7 +76,7 @@ function renderDateTime(name,label,value,description,typeInfo,dev){
   <p class="text<?=dev? " devmode" : ""?>">
     <label for="<?=name ?>" title=<?=label ?> ><?=label ?></label>
     <input type="<?=typeInfo.type ?>" name="<?=name ?>" id="<?=name ?>" title="Format: <?=typeInfo.format ?>" value="<?=new Date(value).format(typeInfo.format) ?>"/>
-    <span class="small"><?=description ?></span>
+    <span class="description"><?=description ?></span>
   </p>
 <?
 }
@@ -101,7 +101,7 @@ function renderRange(name,label,value,description,typeInfo,dev){
   <p class="text<?=dev? ' devmode' : ''?>">
     <label for="<?=name ?>" title=<?=label ?> ><?=label ?></label>
     <input type="range" name="<?=name ?>" id="<?=name ?>" value="<?=value ?>" min="<?=typeInfo.min ?>" max="<?=typeInfo.max ?>" step="<?=typeInfo.step ?>"/>
-    <span class="small"><?=description ?></span>
+    <span class="description"><?=description ?></span>
   </p>
 <?
 }
@@ -124,7 +124,7 @@ function renderSelection(name,label,value,description,typeInfo,dev){
          renderOptions(	groups[cnt_g].items, groups[cnt_g].label, selectedValues);
     } ?>
     </select>
-    <span class="small"><?=description ?></span>
+    <span class="description"><?=description ?></span>
   </p>
 <?
 }

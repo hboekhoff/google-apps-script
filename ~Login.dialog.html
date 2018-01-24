@@ -4,22 +4,24 @@
     <base target="_top">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
     </script>
-    <?!= include("~Login.dialog.css"); ?>
+    <?!= include("~common.css"); ?>
   </head>
   <body>
     <form>
-      <p class="text">
-        <input type="text" name="username" id="username" placeholder="Benutzername" value="<?=username?>"/>
-      </p>
-      <p class="text">
-        <input type="password" name="password" id="password" placeholder="Passwort" />
-      </p>
-      <p class="checkbox">
-        <input type="checkbox" name="savepermanent" id="savepermanent" value="savepermanent" />
-        <label for="savepermanent">Dauerhaft angemeldet bleiben</label>
-      </p>
+      <div class="fields">
+        <p class="text">
+          <input type="text" name="username" id="username" placeholder="Benutzername" value="<?=username?>"/>
+        </p>
+        <p class="text">
+          <input type="password" name="password" id="password" placeholder="Passwort" />
+        </p>
+        <p class="checkbox">
+          <input type="checkbox" name="savepermanent" id="savepermanent" value="savepermanent" />
+          <label for="savepermanent">Dauerhaft angemeldet bleiben</label>
+        </p>
+      </div>
       <p class="buttons">
-        <input type="button" value="Anmelden" id="okButton" />
+        <input type="button" value="Anmelden" id="okButton" class="action"/>
         <input type="button" value="Abbrechen" id="cancelButton"/>
       </p>
     </form>
