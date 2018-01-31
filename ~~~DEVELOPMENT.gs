@@ -16,7 +16,8 @@ DEVELOPER_MODE = true;
 function DEV_createMenu() {
   var ui = SpreadsheetApp.getUi();
   var menu = ui.createMenu('DEVELOPMENT')
-    .addItem('Alle Optionen...', 'DEV_editAllProperties');
+    .addItem('Alle Optionen...', 'DEV_editAllProperties')
+    .addItem('Cache löschen...', 'DEV_clearPropertiesAndCaches');
 
   menu.addToUi();
 }

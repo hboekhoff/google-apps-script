@@ -90,6 +90,7 @@ function renderCheckbox(name,label,value,description,dev){
   <? }
      else { 
   ?>
+      <label> </label>
       <input type="checkbox" name="<?=name ?>" id="<?=name ?>" value="true" <?= value? 'checked' :'' ?> />
       <label for="<?=name ?>" title=<?=label ?> ><?=label ?></label>
   <? } ?>

@@ -43,9 +43,30 @@ Object.defineProperties(HarvestConnection_v2.prototype,{
     enumerable: false,
     configurable: false,
     value: function(path,params) {
-      params = params || {};
+    
+      function getDataFieldName(d) {
+        for( var k in d )
+          if( ',page,total_pages,total_entries,next_page,previous_page,links,'.indexOf(','+k+',') < 0 )
+            return k;
+      }
 
+      params = params || {};
+      var page = params['page'];
+      
       var data = this.connection.execute(path, 'get', params);
+      
+      if( data.total_pages > 1 && isUndefined(page) ) {
+        var dataName = getDataFieldName(data);
+        var chunk = data;
+        while( chunk.page < chunk.total_pages ) {
+          params.page = chunk.next_page;
+          chunk = this.connection.execute(path, 'get', params);
+          data[dataName] = data[dataName].concat(chunk[dataName]);
+        }
+        data.total_pages = 1;
+        data.next_page = null;
+        data.previous_page = null;
+      }
 
       return data;
     }
@@ -75,7 +96,7 @@ Object.defineProperties(HarvestConnection_v2.prototype,{
       }
       else {
         var path = 'users/' + userid + '/project_assignments';
-        data = this.execute(path);
+        data = this.execute(path,{per_page:1});
         CacheService.getUserCache().put(cachekey,JSON.stringify(data));
       }
       return data;

@@ -1,9 +1,18 @@
 function showPropertiesDialog(title, properties, customHandlerName) {
   function calculateDialogHeight(props) {
     var h = props.reduce(function(p,c){
-                           return p + (c.type.multiple && c.type.type=='select'? 153 : 51);
-                         }, 53);
-    return h>563 ? 563 : h;
+                            if( c.type.type == 'checkbox' ) return p + 28;
+                            if( c.description != '' ) p += 2.3;
+                            switch(c.type.type) {
+                              case 'select':
+                                return p + (c.type.multiple? 144 : 42);
+                              case 'color':
+                                return p + 50;
+                              default:
+                                return p + 44;
+                            }
+                         }, 61.0);
+    return h>516 ? 516 : h;
   }
 
 
@@ -25,7 +34,6 @@ function showPropertiesDialog(title, properties, customHandlerName) {
   dialog = dialog.evaluate()
     .setWidth(500)
     .setHeight(calculateDialogHeight(properties));
-  
   SpreadsheetApp.getUi().showModalDialog(dialog,title);
 }
 
