@@ -12,13 +12,47 @@ Object.defineProperties(Connection.prototype,{
     configurable: false,
     value: 'application/json'
   },
-	/*
-	*  Parameters
-	*     successHandlerName: 
-	*					successHandler(connectionName,responsecode,responseobj,customData)
-	*     errorHandlerName: 
-	*					errorHandler(connectionName,responsecode,responsetext,customData)
-	*/
+  /*
+  *  Syntax
+  *     execute(path[, method[, payload[, successHandlerName[, errorHandlerName[, customData]]]]])
+  *
+  *  Parameters
+  *     path
+  *       the relative path to the remote-method
+  *     method
+  *       the http-method default: 'get'
+  *     payload
+  *       request-data to be passed with the request
+  *     successHandlerName: 
+  *         successHandler(connectionName,responsecode,responseobj,customData)
+  *     errorHandlerName: 
+  *         errorHandler(connectionName,responsecode,responsetext,customData)
+  *     customData
+  *       any custom-data that will be passed through to thehandler functions
+  *       since this data will be serialized and deserialized in an asynchronous 
+  *       call, some functionality might not be available on the object, that is 
+  *       ultimately passed to the handler funcitons.
+  *
+  * Return value
+  *   if the method is executed asynchronously, the result is undefined
+  *   if it is executed synchronously, the function returns the result of 
+  *   either the successHandler or the errorHandler.
+  *   if no handler-function is provided, the function will return the result 
+  *   of the remote-call
+  *
+  * Exceptions
+  *   if an errorHandler is not provided the function will throw an
+  *   exception in case of an error. if the errorHandler exists, all
+  *   error processing is passed to the errorHandler. 
+  *
+  * Remarks
+  *   the function by default follows an asynchronous execution-plan.
+  *   The asynchronous mode is necessary because the authentification 
+  *   procedure may require user input. If the authentification can do 
+  *   without user input, however it will be executed synchronously and 
+  *   so will the successHandler or errorHandler.
+  *   
+  */
   execute: {
     enumerable: false,
     writable: false,
@@ -37,13 +71,13 @@ Object.defineProperties(Connection.prototype,{
                 .authentifyAndExecute(this.name,params,'Connection.execute','Connection.failure');
     }
   },
-	/*
-	*  Parameters
-	*     successHandlerName: 
-	*					successHandler(connectionName,customData)
-	*     errorHandlerName: 
-	*					errorHandler(connectionName,messageCode,messageText,customData)
-	*/
+  /*
+  *  Parameters
+  *     successHandlerName: 
+  *         successHandler(connectionName,customData)
+  *     errorHandlerName: 
+  *         errorHandler(connectionName,messageCode,messageText,customData)
+  */
   open: {
     enumerable: false,
     writable: false,
@@ -84,7 +118,7 @@ Object.defineProperties(Connection,{
       var url = ConnectionRequestData.prototype.getUrl.apply(requestData);
       var fetchparams = ConnectionRequestData.prototype.getFetchParameters.apply(requestData,[authentification]);
       var response = UrlFetchApp.fetch(url, fetchparams);
-
+  
       var responsecode = response.getResponseCode();
       var responsetext = response.getContentText();
 

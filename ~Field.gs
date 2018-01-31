@@ -30,7 +30,7 @@ Object.defineProperties(Field.prototype, {
     configurable:false,
     enumerable:false,
     value: function(obj){
-      return this.formatFunction(this.extract(obj));
+      return this.formatFunction(this.extractValue(obj));
     }
   }
 });

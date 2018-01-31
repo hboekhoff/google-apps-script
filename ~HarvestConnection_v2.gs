@@ -29,14 +29,18 @@ Object.defineProperties(HarvestConnection_v2.prototype,{
     
   /*
   *  Syntax
-  *   execute(path[,params,[fields,[expand[,chunkSize]]]])
+  *   execute(path[,params])
   *
   *  Parameters
-  *     path:      the relative path to the api-call (e.g. https://jiradomain/rest/<path>)
-  *     params:    an object with a key-value set of JIRA parameters. See JIRA API reference 
+  *     path:      the relative path to the api-call (e.g. https://api.harvestapp.com/v2/<path>)
+  *     params:    an object with a key-value set of parameters. See Harvest API reference 
   *                for more details
   *
   *  Renarks
+  *   Results with mor than 100 items are usually splitted into 
+  *   several result-sets with 100 items each. The execute method 
+  *   automatically tries to collect all items into one result-set 
+  *   by performing multiple calls to the API.
   */
   execute: {
     writable: false,
@@ -85,11 +89,11 @@ Object.defineProperties(HarvestConnection_v2.prototype,{
     writable: false,
     enumerable: false,
     configurable: false,
-    value: function(userid,forceRequest) {
+    value: function(userid,ignoreCache) {
       var cachekey = this.name + '_Harvest_v2.projects';
       var data;
       
-      if( !forceRequest ) 
+      if( !ignoreCache ) 
         data = CacheService.getUserCache().get(cachekey);
       if( !isUndefined(data) ) {
         data = JSON.parse(data);
@@ -113,9 +117,9 @@ Object.defineProperties(HarvestConnection_v2.prototype,{
       toDate.setDate(toDate.getDate() + 1);
       return this.execute(path,
                           {'user_id':userid,
-                          'from': fromDate.format('YYYY-MM-dd'),
-                          'to': toDate.format('YYYY-MM-dd')
-                         });
+                           'from': fromDate.format('YYYY-MM-dd'),
+                           'to': toDate.format('YYYY-MM-dd')
+                          });
     }
   },
   updateTimeEntry: {
