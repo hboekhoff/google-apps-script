@@ -26,10 +26,10 @@ function DEV_editAllProperties() {
 }
 function DEV_clearPropertiesAndCaches() {
   var props = new Properties(
-    new Property('userProperties', 'Properties', false,'checkbox', 'User Properties zurücksetzen'),
-    new Property('documentProperties','',false,'checkbox', 'Document Properties zurücksetzen'),
-    new Property('scriptProperties', '', false,'checkbox', 'Script Properties zurücksetzen'),
-    new Property('cache', 'Caches', '', 'Kommaseparierte Liste der zu löschenden Cache-Keys') );
+    new Property('userProperties','checkbox','Properties','User Properties zurücksetzen',false),
+    new Property('documentProperties','checkbox','','Document Properties zurücksetzen',false),
+    new Property('scriptProperties','checkbox', '','Script Properties zurücksetzen',false),
+    new Property('cache', 'Caches','text','Kommaseparierte Liste der zu löschenden Cache-Keys','') );
 
     showPropertiesDialog('Gespeicherte Daten zurücksetzen', props, 'DEV_deletePropertiesAndCacheCallback');
 }

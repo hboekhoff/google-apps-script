@@ -40,6 +40,7 @@
              case 'range':
                renderRange(name,label,value,description,typeInfo,dev);
                break;
+             case 'multiple':
              case 'select':
                renderSelection(name,label,value,description,typeInfo,dev);
           } // switch 
@@ -113,14 +114,14 @@ function renderSelection(name,label,value,description,typeInfo,dev){
     selectedValues = [];
   else if( isArray(value) )
     selectedValues = value;
-  else if( !typeInfo.multiple )
+  else if( typeInfo.type != 'multiple' )
     selectedValues = [value];
   else
     selectedValues = value.toString().split();
 ?>
-  <p class="selection<?=typeInfo.multiple? ' multiple' : ''?><?=dev? ' devmode' : ''?>">
+  <p class="selection<?=typeInfo.type == 'multiple'? ' multiple' : ''?><?=dev? ' devmode' : ''?>">
     <label for="<?=name ?>" title=<?=label ?> ><?=label ?></label>
-    <select name="<?=name ?>" id="<?=name ?>" <? if(typeInfo.multiple) {?> multiple size="7"<?}?>/>
+    <select name="<?=name ?>" id="<?=name ?>" <? if(typeInfo.type == 'multiple') {?> multiple size="7"<?}?>/>
     <? for(var cnt_g = 0 ; cnt_g < groups.length ; cnt_g++ ) { 
          renderOptions(	groups[cnt_g].items, groups[cnt_g].label, selectedValues);
     } ?>

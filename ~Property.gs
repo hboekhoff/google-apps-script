@@ -16,11 +16,8 @@ Logger.log('Property');
  *    visible - Determines if the property is displayed in the edit-dialog. 
  *              if set to false, the property is only displayed if the variable 
  *              DEVELOPER_MODE is set to true.
- *              any boolean value will be interpreted as the visible-flag
  *              default: true 
  *    type - defines how the property is formattet in the edit-dialog
- *           any string, that matches one of the following, is interpreted 
- *           as the type parameter
  *            text - a simple text input, this is the default
  *            checkbox - a checkbox
  *            date - a date-value with the format "yyyy-MM-dd"
@@ -39,17 +36,12 @@ Logger.log('Property');
  *            multiple - a multi-select-list. requires a list-parameter to 
  *                       define the lists content.
  *    description - a description, that is displayed in the edit-dialog. 
- *                  Any string, that does not match one of the types 
- *                  specified above, will be interpreted as the description
  *    list - the list parameter must contain an array of objects with the
  *           properties value, label and group (opt) 
- *           any array will be identified as the list-parameter
  *            [{value:'1',label:'some value'},
  *             {value:'2',label:'other value',group:'with group'},
  *             ...]
  *    range - an object that defines the range of a numerical value
- *            any object with a max-property will be identified as a 
- *            range specifier
  *            {max:100,min:0,step:10} (default values: min=1, step=1)
  *
  *  Remarks:
@@ -71,79 +63,57 @@ Logger.log('Property');
  *      creates dropdown-roperty with description
  */
  
-function Property(name,label,defaultValue,x1,x2,x3) {
-  function setTypeDate(prop,type,format) {
-    prop.type = {'type': type,'format':format};
-  }
-  function setTypeSelect(prop,list,multiple) {
-    prop.type = prop.type || {};
-    prop.type.type = 'select';
-    prop.type.multiple = multiple || prop.type.multiple || false;
-    prop.type.items = list || prop.type.items;
-  }
-  function setTypeRange(prop,range) {
-    prop.type = {'type':'range',
-                 'max':range['max'],
-                 'min':range['min'] || 1,
-                 'step':range['step'] || 1};
-  }
+function Property(name,type,label,description,defaultValue,visible,rangeMaxOrList,rangeMin,rangeStep) {
 
-  function setOptionalArguments(prop) {
-    for( var cnt = 1 ; cnt < arguments.length ; cnt++ ) {
-      if( isUndefined(arguments[cnt]) ) 
-        continue;
-      else if( typeof arguments[cnt] == 'boolean' ) 
-        prop.isVisible = arguments[cnt];
-      else if( isArray(arguments[cnt]) )
-        setTypeSelect(prop,arguments[cnt]);
-      else if( isObject(arguments[cnt]) && !isUndefined(arguments[cnt]['max']) )
-        setTypeRange(prop,arguments[cnt]);
-      else if( isString(arguments[cnt]) )
-        switch( arguments[cnt] ) {
-          case 'date':
-            setTypeDate(prop,arguments[cnt],'yyyy-MM-dd');
-            break;
-          case 'month':
-            setTypeDate(prop,arguments[cnt],'yyyy-MM');
-            break;
-          case 'week':
-            setTypeDate(prop,arguments[cnt],"yyyy-'W'ww");
-            break;
-          case 'time':
-            setTypeDate(prop,arguments[cnt],'hh:mm:ss');
-            break;
-          case 'datetime-local':
-            setTypeDate(prop,arguments[cnt],"yyyy-MM-dd'T'hh:mm:ss");
-            break;
-
-          case 'checkbox':
-          case 'color':
-          case 'range':
-          case 'url':
-          case 'email':
-          case 'password':
-            prop.type = {'type': arguments[cnt]};
-            break;
-
-          case 'multiple':
-            setTypeSelect(prop,undefined,true);
-            break;
-
-          default:
-            prop.description = arguments[cnt];
-        }
-    }
-  }
-  
   Property.registerForDevMode(this);
 
   this.name = name;
+  this.type = {'type': type || 'text'}; 
   this.label = label;
+  this.description = description || '';
   this.defaultValue = defaultValue;
-  this.isVisible = true;
-  this.description = '';
-  this.type = {'type':'text'}; 
-  setOptionalArguments(this,x1,x2,x3);
+  this.isVisible = visible || true;
+
+  switch( this.type.type ) {
+    case 'date':
+      this.type['format'] = 'yyyy-MM-dd';
+      break;
+
+    case 'month':
+      this.type['format'] = 'yyyy-MM';
+      break;
+
+    case 'week':
+      this.type['format'] = "yyyy-'W'ww";
+      break;
+
+    case 'time':
+      this.type['format'] = 'hh:mm:ss';
+      break;
+
+    case 'datetime-local':
+      this.type['format'] = "yyyy-MM-dd'T'hh:mm:ss";
+      break;
+
+    case 'range' :
+      this.type['max'] = rangeMaxOrList || 100;
+      this.type['min'] = rangeMin || 1;
+      this.type['step'] = rangeStep || 1;
+      break;
+                     
+    case 'multiple' :
+    case 'select' :
+      this.type['items'] = rangeMaxOrList;
+      break;
+
+    //case 'text' :
+    //case 'checkbox' :
+    //case 'color' :
+    //case 'url' :
+    //case 'email' :
+    //case 'password' :
+    //  break;
+  }
 }
 
 Object.defineProperties(Property.prototype,{
