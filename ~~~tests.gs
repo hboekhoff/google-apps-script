@@ -26,3 +26,8 @@ Object.defineProperty(evaltest,'testfunction',{
                       });
                       
                       
+
+function testdateformatter() {
+  var d = new Date();
+  Logger.log(d.format('YYYY-MM-dd hh:mm:ss.SSS'));
+}

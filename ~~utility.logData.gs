@@ -28,7 +28,7 @@ function LogData() {
   var d = {};
   d[args.key] = args.data;
   var d2 = {};
-  d2[new Date().toString()] = d;
+  d2[new Date().format('YYYY-MM-dd HH:mm:ss.SSS')] = d;
 
   Output.writeObject(d2, args.sheet || getLoggingSheet());
 }
