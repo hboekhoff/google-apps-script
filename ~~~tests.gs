@@ -31,3 +31,11 @@ function testdateformatter() {
   var d = new Date();
   Logger.log(d.format('YYYY-MM-dd hh:mm:ss.SSS'));
 }
+
+function testHashcode() {
+  Logger.log(getHashCode({}));
+  Logger.log(getHashCode([]));
+  Logger.log(getHashCode({a:1}));
+
+
+}

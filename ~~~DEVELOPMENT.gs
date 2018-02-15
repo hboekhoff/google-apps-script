@@ -29,7 +29,7 @@ function DEV_clearPropertiesAndCaches() {
     new Property('userProperties','checkbox','Properties','User Properties zurücksetzen',false),
     new Property('documentProperties','checkbox','','Document Properties zurücksetzen',false),
     new Property('scriptProperties','checkbox', '','Script Properties zurücksetzen',false),
-    new Property('cache', 'Caches','text','Kommaseparierte Liste der zu löschenden Cache-Keys','') );
+    new Property('cache','text','Caches','Kommaseparierte Liste der zu löschenden Cache-Keys','') );
 
     showPropertiesDialog('Gespeicherte Daten zurücksetzen', props, 'DEV_deletePropertiesAndCacheCallback');
 }

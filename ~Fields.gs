@@ -28,6 +28,21 @@ Object.defineProperties(Fields.prototype, {
       return Fields.apply(this.filter(function(f){return names.indexOf(f.name)>=0;}));
     }        
   },
+  getSubset: {
+    enumerable:false,
+    writable:false,
+    configurable:false,
+    value: function() {
+      var names = isArray(arguments[0])? arguments[0] : arguments;
+      var result = [];
+      for( var cnt = 0 ; cnt < names.length ; cnt++ ) {
+        var tmp = this._internalMap[names[cnt]];
+        if( !isUndefined(tmp) )
+          result.push(tmp);
+      }
+      return Fields.apply(result);
+    }        
+  },
   labels: {
     enumerable: false,
     configurable:false,

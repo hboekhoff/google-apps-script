@@ -1,0 +1,347 @@
+<script>
+var lastHashcode = 0;
+var bookingDate = undefined;
+var lastJiraData = undefined;
+var lastHarvestData = undefined;
+
+function updateSidebar(data) {
+console.log('updateSidebar: ' + !(data == "unchanged"));
+  if( data == "unchanged" ) return;
+console.log(data);
+
+  clearErrorMessage();
+  lastHashcode = data.hashcode;
+  switch( data.type ) {
+    case 'notInitialized' :
+      bookingDate = undefined;
+      $('#jira, #harvest,#new-harvest').hide();
+      $('#not-initialized').show();
+      break;
+
+    case 'none':
+      bookingDate = data.bookingDate;
+      $('#not-initialized,#jira, #harvest').hide();
+      displayNewHarvest();
+      break;
+      
+    case 'jira':
+      bookingDate = data.bookingDate;
+      lastJiraData = data.jira;
+      $('#not-initialized,#harvest, #new-harvest').hide();
+      displayJira(data.jira);
+      break;
+      
+    case 'harvest':
+      bookingDate = data.bookingDate;
+      lastHarvestData = data.harvest;
+      $('#not-initialized,#jira, #new-harvest').hide();
+      displayHarvest(data.harvest);
+      break;
+  }
+}
+
+function displayJira(jira) {
+  $('#j-key').text(jira.key).prop("href", "https://sjira.funkemedien.de/browse/" + jira.key);
+  $('#j-summary').text(jira.summary).prop("href", "https://sjira.funkemedien.de/browse/" + jira.key);
+  $('#j-issuetype').text(jira.issuetype||'');
+  $('#j-issuetype').css('backgroundImage','url("'+jira.issuetypeicon+'")');
+  // status
+  var tmp = $('#j-status');
+  tmp.text(jira.status||'');
+  tmp.css('backgroundColor',mapJiraStatusColor(jira.statuscolor||'none'));
+  tmp.css('color',getTextColor(tmp.css('background-color')));
+  // Bearbeiter
+  tmp = $('#j-assignee');
+  if(jira.assignee == undefined) {
+    tmp.hide();
+  }
+  else {
+    tmp.text(jira.assignee);
+    tmp.css('backgroundImage','url("'+jira.assigneeAvatar+'")');
+    tmp.show();
+  }
+  $('#j-originalestimate').text(jira.originalestimate||'');
+  $('#j-aggregateoriginalestimate').text(jira.aggregateoriginalestimate||'');
+  $('#j-timeestimate').text(jira.timeestimate||'');
+  $('#j-aggregatetimeestimate').text(jira.aggregatetimeestimate||'');
+  $('#j-timespent').text(jira.timespent||'');
+  $('#j-aggregatetimespent').text(jira.aggregatetimespent||'');
+  $('#j-mytimespenttoday').text(jira.mytimespenttoday);
+  $('#j-mytimespenttotal').text(jira.mytimespenttotal);
+  if( isSameDay(bookingDate,new Date()) ) 
+    $('#j-mytimespenttoday-label').text('Nur heute');
+  else 
+    $('#j-mytimespenttoday-label').text('Am ' + formatDate(bookingDate) );
+
+  $('#jira').show();
+}
+function isSameDay( d1, d2 ) {
+  return new Date(d1).setHours(0,0,0,0) == new Date(d2).setHours(0,0,0,0);
+}
+function formatDate(date) {
+  realDate = new Date(date);
+  var y = realDate.getFullYear(),
+      m = ('0' + (realDate.getMonth() + 1)).slice(-2),
+      d = ('0' + realDate.getDate()).slice(-2);
+  return d + '.' + m + '.' + y;
+}
+
+function displayHarvest(data) {
+  $('#h-project').val(data.projectid);
+  setTaskList('#h-task',data.projectid);  
+  $('#h-task').val(data.taskid);
+  $('#h-notes').val(data.notes);
+  $('#h-hours').val(data.hours);
+
+  $('#harvest').show();
+}
+function displayNewHarvest(data) {
+  $('#new-harvest').show();
+}
+
+function prepareHarvestProjectList() {
+  var groups = {};
+  for( var cnt = 0 ; cnt < harvestProjects.length ; cnt++ ) {
+    var project = harvestProjects[cnt];
+    var group = groups[project.clientId];
+    if( group == undefined ) groups[project.clientId] = group = {'name':project.clientName, projects: []};
+    group.projects.push(project);
+  }
+  var dd_h = $('#h-project');
+  var dd_nh = $('#nh-project');
+  dd_h.empty();
+  dd_nh.empty();
+  for( var key in groups ) {
+    dd_h.append(createOptGroup(groups[key]));
+    dd_nh.append(createOptGroup(groups[key]));
+  }
+  dd_h.change(function(){setTaskList('#h-task',$(this).val());});
+  dd_nh.change(function(){setTaskList('#nh-task',$(this).val());});
+}
+function createOptGroup(group) {
+  var optgroup = $("<optgroup>",{"label":group.name});
+  for( var cnt = 0 ; cnt < group.projects.length ; cnt++ ) {
+    var project = group.projects[cnt];
+    $("<option>", {"value":project.projectId, "title": project.projectDescription}).text(project.projectName).appendTo(optgroup);
+  }
+  return optgroup;
+}
+function setTaskList(id,projectId) {
+  var dd = $(id);
+  dd.empty();
+  var proj = getHarvestProject(projectId);
+  if( proj == undefined ) return;
+
+  var tasks = proj.tasks;
+  var ogBillable = $("<optgroup>",{"label":"Verrechenbar"});
+  var ogNotBillable = $("<optgroup>",{"label":"Nicht verrechenbar"});
+  for( var cnt = 0 ; cnt < tasks.length ; cnt++ ) {
+    var opt = $("<option>", {"value":tasks[cnt].taskId}).text(tasks[cnt].name);
+    if( tasks[cnt].billable == true )
+      ogBillable.append(opt);
+    else
+      ogNotBillable.append(opt);
+  }
+  if(ogNotBillable.children().length > 0) 
+    dd.append(ogNotBillable);
+  if(ogBillable.children().length > 0) 
+    dd.append(ogBillable);
+}
+function getHarvestProject(projectId) {
+  for( var cnt = 0 ; cnt < harvestProjects.length ; cnt++ )
+    if( harvestProjects[cnt].projectId == projectId )
+      return harvestProjects[cnt];
+}
+function mapJiraStatusColor(c) {
+  switch(c) {
+    case 'blue-gray': return '#4a6785';
+  }
+  return c;
+}
+function getTextColor(bgcol) { 
+  if( bgcol == undefined || bgcol == 'none' ) return '#000000';
+  var r,g,b;
+  if( bgcol.substring(0,1) == '#' ) {
+    var rgbstring = parseInt(bgcol.substring(1),16);
+    r = (rgb >> 16) & 0xff; 
+    g = (rgb >> 8) & 0xff; 
+    b = rgb & 0xff;
+  }
+  else if( bgcol.substring(0,4) == 'rgb(' ) {
+    var rgbarray = bgcol.substring(4).split(',');
+    r = parseInt(rgbarray[0]);
+    g = parseInt(rgbarray[1]);
+    b = parseInt(rgbarray[2]);
+  }
+  else {
+    r = (bgcol >> 16) & 0xff; 
+    g = (bgcol >> 8) & 0xff; 
+    b = bgcol & 0xff;
+  }
+  return ( r*299 + g*587 + b*114 < 128000 )? '#ffffff' : '#000000'; 
+}
+function clickRadiospan() {
+  $(this).siblings().removeClass('selected');
+  $(this).addClass('selected');
+  if(  this.id == 'j-auto' || this.id == 'j-leave' )
+    $('#j-remaining').prop('disabled',true);
+  else
+    $('#j-remaining').prop('disabled',false).focus();
+  $('#j-adjustEstimate').val(this.id);
+}
+
+function showErrorMessage(m) {
+  if( m == undefined ) return;
+  console.log(m);
+  $('#errormessage').html(m.message || m).show();
+}
+function clearErrorMessage() {
+  $('#errormessage').hide().text('');
+}
+function clickButton(id) {
+  $(id).addClass('clicked');
+}
+function unclickButton(id) {
+  $(id).removeClass('clicked');
+}
+
+
+
+
+
+function createJiraWorklog() {
+  clickButton('#j-save');
+  var data = {'id':lastJiraData.key,
+              'time':$('#j-time').val(),
+              //'adjustEstimate':$('#j-adjustEstimate').val().substring(2),
+              //'remaining':$('#j-remaining').val(),
+              'comment':$('#j-comment').val()
+             };
+  google.script.run
+    .withSuccessHandler(createJiraWorklogSuccess)
+    .withFailureHandler(createJiraWorklogFailure)
+    .createJiraWorklog(data);
+  
+  return false;
+}
+function createJiraWorklogSuccess() {
+  clearErrorMessage();
+  $('#j-remaining,#j-time,#j-comment').val('');
+  google.script.run.getJiraBookings(bookingDate);
+  unclickButton('#j-save');
+}
+function createJiraWorklogFailure(e) {
+  showErrorMessage(e);
+  unclickButton('#j-save');
+}
+
+function updateHarvestBooking() {
+  clickButton('#h-update');
+  var data = { 'id': lastHarvestData.id,
+               'projectid': $('#h-project').val(),
+               'taskid': $('#h-task').val(),
+               'notes':  $('#h-notes').val(),
+               'hours':  $('#h-hours').val(),
+               'spentat': lastHarvestData.spentat
+             };
+  google.script.run
+    .withSuccessHandler(updateHarvestBookingSuccess)
+    .withFailureHandler(updateHarvestBookingFailure)
+    .updateHarvestBooking(data);
+    
+  return false;
+}
+function updateHarvestBookingSuccess() {
+  google.script.run.getHarvestBookings(bookingDate);
+  clearErrorMessage();
+  unclickButton('#h-update');
+}
+function updateHarvestBookingFailure(e) {
+  showErrorMessage(e);
+  unclickButton('#h-update');
+}
+ 
+ 
+function createHarvestBooking() {
+  clickButton('#nh-create');
+  var data = { 'projectid': $('#nh-project').val(),
+               'taskid': $('#nh-task').val(),
+               'notes':  $('#nh-notes').val(),
+               'hours':  $('#nh-hours').val(),
+               'spentat': bookingDate
+             };
+  google.script.run
+    .withSuccessHandler(createHarvestBookingSuccess)
+    .withFailureHandler(createHarvestBookingFailure)
+    .createHarvestBooking(data);
+    
+  return false;
+}
+function createHarvestBookingSuccess() {
+  google.script.run.getHarvestBookings(bookingDate);
+  clearErrorMessage();
+  $('#nh-hours,#nh-notes').val('');
+  unclickButton('#nh-create');
+}
+function createHarvestBookingFailure(e) {
+  showErrorMessage(e);
+  unclickButton('#nh-create');
+}
+
+function deleteHarvestBooking() {
+  clickButton('#h-delete');
+  google.script.run
+    .withSuccessHandler(deleteHarvestBookingSuccess)
+    .withFailureHandler(deleteHarvestBookingFailure)
+    .deleteHarvestBooking(lastHarvestData.id);
+    
+  return false;
+}
+function deleteHarvestBookingSuccess() {
+  google.script.run.getHarvestBookings(bookingDate);
+  unclickButton('#h-delete');
+}
+function deleteHarvestBookingFailure(e) {
+  showErrorMessage(e);
+  unclickButton('#h-delete');
+}
+ 
+ 
+function initializeAll() {
+  clickButton('#initialize');
+  google.script.run
+    .withSuccessHandler(initializeAllSuccess)
+    .withFailureHandler(initializeAllFailure)
+    .startLoadingToday(data);
+    
+  return false;
+}
+function initializeAllSuccess() {
+  unclickButton('#initialize');
+}
+function initializeAllFailure(e) {
+  showErrorMessage(e);
+  unclickButton('#initialize');
+}
+ 
+  
+ 
+//google.script.run.withSuccessHandler(updateSidebar).getSelectedData(0);
+
+$(document).ready(function(){
+  prepareHarvestProjectList();
+  
+  $('#j-reset').click(function(){$('#j-remaining,#j-time,#j-comment').val('');return false;});
+  $('#j-save').click(createJiraWorklog);
+  $('#h-delete').click(deleteHarvestBooking);
+  $('#h-reset').click(function(){displayHarvest(lastHarvestData);return false;});
+  $('#h-update').click(updateHarvestBooking);
+  $('#nh-reset').click(function(){$('#nh-hours,#nh-notes').val('');return false;});
+  $('#nh-create').click(createHarvestBooking);
+  $('#initialize').click()
+  //$('.radiospan>span').click(clickRadiospan);
+  
+  setInterval(function() {google.script.run.withSuccessHandler(updateSidebar).getSidebarData(lastHashcode);}, 1000);
+});
+
+</script>

@@ -16,12 +16,13 @@ Object.defineProperties(Field.prototype, {
   formatFunction: { 
     configurable:false,
     enumerable:false,
-    value: function(v){return v;},
     writable:true,
+    value: function(v){return v;}
   },
   extractValue: { 
     configurable:false,
     enumerable:false,
+    writable:false,
     value: function(obj){
       return obj.getNestedValue(this.accessor);
     }
@@ -29,6 +30,7 @@ Object.defineProperties(Field.prototype, {
   extractFormattedValue: { 
     configurable:false,
     enumerable:false,
+    writable:false,
     value: function(obj){
       return this.formatFunction(this.extractValue(obj));
     }

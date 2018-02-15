@@ -60,14 +60,14 @@ Object.defineProperties(JiraConnection.prototype,{
       var data = this.connection.execute(path, 'get', params);
 
       if( !isUndefined(chunkSize) ) {
+        var chunk = data;
         if( isUndefined(maxResults) || maxResults > chunk.total )
           maxResults = chunk.total;
           
-        var chunk = data;
         while( chunk.startAt + chunk.maxResults < maxResults ) {
           params.startAt = chunk.startAt + chunk.maxResults;
-          if( startAt + chunkSize > maxResults )
-            params['maxResults'] = maxResults - startAt;
+          if( params.startAt + chunkSize > maxResults )
+            params['maxResults'] = maxResults - params.startAt;
           chunk = this.connection.execute( path, 'get', params );
           data.issues = data.issues.concat(chunk.issues);
         }
@@ -85,6 +85,26 @@ Object.defineProperties(JiraConnection.prototype,{
                           {'jql': 'issuekey in (' + keys.join() + ')'},
                           fields);
     }
+  },
+    
+  fetchIssuesByChangeDate: {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function(date,projects,fields) {
+      var d1 = new Date(date);
+      var d2 = new Date(date);
+      d2.setDate(d2.getDate() + 1)  ;
+      
+      var d1f = d1.format('YYYY-MM-dd');
+      var d2f = d2.format('YYYY-MM-dd');
+      return this.execute('api/2/search', 
+                           {'jql': '((updated >= ' + d1f + '  and updated < ' + d2f + ')' 
+                            + ' or (worklogdate >= ' + d1f + ' and worklogdate < ' + d2f + '))'
+                            + 'and project in(' + projects + ')'
+                           },
+                           fields, 'changelog', 50);
+    }    
   }
   
   
