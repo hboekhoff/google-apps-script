@@ -75,7 +75,14 @@ Object.defineProperties(JiraConnection.prototype,{
       return data;
     }
   },
-
+  whoAmI: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(expand) {
+      return this.execute('api/2/myself',null,null,expand);
+    }
+  },
   fetchIssuesByKey: {
     enumerable: false,
     writable: false,

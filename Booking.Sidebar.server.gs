@@ -1,9 +1,13 @@
 function showBookingSidebar() {
   var sidebar = HtmlService.createTemplateFromFile('Booking.Sidebar');
   
-  if( !Globals.DISABLE_HARVEST )
-    //ToDo: sidebar.harvestProjects = toSimpleObjectArray(Harvest.getUserProjects(Harvest.getMyself().user.id), HarvestFields.clientprojecttasks);
-    ;
+  if( !Globals.DISABLE_HARVEST ) {
+    var me = TheHarvestConnection_v1.whoAmI();
+    var projects = TheHarvestConnection_v2.fetchProjects(me.id);
+    sidebar.harvestProjects = projects.project_assignments.map(function(v){
+                                return HarvestFields_v2.clientprojecttasks.mapValuesToObject(v);
+                              });
+  }
   else
     sidebar.harvestProjects = [];
     

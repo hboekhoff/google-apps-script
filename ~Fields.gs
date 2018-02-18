@@ -72,5 +72,31 @@ Object.defineProperties(Fields.prototype, {
     value: function(obj) {
       return this.map(function(f){return f.extractFormattedValue(obj);});
     }    
+  },
+  mapValuesToObject: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(obj) {
+      var result = {};
+      for( var cnt = 0 ; cnt < this.length ; cnt++ ) {
+        var f = this[cnt];
+        result[f.name] = f.extractValue(obj);
+      }
+      return result;
+    }
+  },
+  mapFormattedValuesToObject: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(obj) {
+      var result = {};
+      for( var cnt = 0 ; cnt < this.length ; cnt++ ) {
+        var f = this[cnt];
+        result[f.name] = f.extractFormattedValue(obj);
+      }
+      return result;
+    }
   }
 });

@@ -123,13 +123,45 @@ var HarvestFields_v1 = new function() {
                                    new Field("hours", "gebucht", "hours", function(v){return v/24;})
                                  );
 
-    this.clientprojecttasks = new Fields( new Field("clientId", "Client-ID","clientId"),
-                                        new Field(["clientId",function(v){return Harvest.getClients()[v];},"name"], "Kunde","clientName"),
-                                        new Field("id", "Projekt-ID", "projectId"),
-                                        new Field("name", "Projektname", "projectName"),
-                                        new Field("description", "Beschreibung", "projectDescription"),
-                                        new Field("tasks.*", "Aufgaben", "tasks", function(v){return {'taskId':v.task_id, 'name':v.taskName,'billable':v.billable};})
-                                      );
+  this.clientprojecttasks = new Fields( new Field("clientId", "Client-ID","clientId"),
+                                      new Field(["clientId",function(v){return Harvest.getClients()[v];},"name"], "Kunde","clientName"),
+                                      new Field("id", "Projekt-ID", "projectId"),
+                                      new Field("name", "Projektname", "projectName"),
+                                      new Field("description", "Beschreibung", "projectDescription"),
+                                      new Field("tasks.*", "Aufgaben", "tasks", function(v){return {'taskId':v.task_id, 'name':v.taskName,'billable':v.billable};})
+                                    );
 
 
-  }();
+}();
+var HarvestFields_v2 = new function() {
+  this.TimeEntryFields = new Fields( 
+       new Field('timeentrydata',
+                 {'id':'id',
+                  'projectid': 'project.id',
+                  'taskid': 'task.id',
+                  'notes': 'notes',
+                  'hours': 'hours',
+                  'spentat': 'spent_date'
+                 },
+                 "BookingInfoData",
+                 function(v){return JSON.stringify(v);}), 
+     new Field("clientProjectName", 
+               {'client':'client.name',
+                'project':'project.name'
+               }, 
+               "Kunde - Projekt", 
+               function(v){return v.client + ' - ' + v.project;} ),
+     new Field("taskName",'task.name', "AufgabenName"),
+     new Field('notes', "notes", "Bemerkungen"),
+     new Field("hours", "hours", "gebucht", function(v){return v/24;})
+   );
+
+  this.clientprojecttasks = new Fields( 
+    new Field("clientId", "client.id", "Client-ID"),
+    new Field('clientName', 'client.name', "Kunde"),
+    new Field('projectId', 'project.id', 'Projekt-ID'),
+    new Field("projectName", 'project.name', "Projektname"),
+    new Field('tasks', "task_assignments.*", "Aufgaben", function(v){return {'taskId':v.task.id, 'name':v.task.name,'billable':v.billable};})
+  );
+  
+}();
