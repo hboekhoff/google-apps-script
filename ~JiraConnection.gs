@@ -48,7 +48,8 @@ Object.defineProperties(JiraConnection.prototype,{
     writable: false,
     enumerable: false,
     configurable: false,
-    value: function(path,params,fields,expand,chunkSize) {
+    value: function(path,method,params,fields,expand,chunkSize) {
+      method = method || 'get';
       params = params || {};
       var maxResults = params['maxResults'];
       params['maxResults'] = chunkSize || maxResults || 1000;
@@ -57,18 +58,18 @@ Object.defineProperties(JiraConnection.prototype,{
       if( !isUndefined(fields) )
         params['fields'] = fields.names;
 
-      var data = this.connection.execute(path, 'get', params);
+      var data = this.connection.execute(path, method, params);
 
       if( !isUndefined(chunkSize) ) {
+        var chunk = data;
         if( isUndefined(maxResults) || maxResults > chunk.total )
           maxResults = chunk.total;
           
-        var chunk = data;
         while( chunk.startAt + chunk.maxResults < maxResults ) {
           params.startAt = chunk.startAt + chunk.maxResults;
-          if( startAt + chunkSize > maxResults )
-            params['maxResults'] = maxResults - startAt;
-          chunk = this.connection.execute( path, 'get', params );
+          if( params.startAt + chunkSize > maxResults )
+            params['maxResults'] = maxResults - params.startAt;
+          chunk = this.connection.execute( path, method, params );
           data.issues = data.issues.concat(chunk.issues);
         }
       }
@@ -81,13 +82,74 @@ Object.defineProperties(JiraConnection.prototype,{
     writable: false,
     configurable: false,
     value: function(keys, fields) {
-      return this.execute('api/2/search', 
+      return this.execute('api/2/search', 'get',
                           {'jql': 'issuekey in (' + keys.join() + ')'},
                           fields);
     }
-  }
+  },
+    
+  fetchIssuesByChangeDate: {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function(date,projects,fields) {
+      var d1 = new Date(date);
+      var d2 = new Date(date);
+      d2.setDate(d2.getDate() + 1)  ;
+      
+      var d1f = d1.format('YYYY-MM-dd');
+      var d2f = d2.format('YYYY-MM-dd');
+      return this.execute('api/2/search', 'get', 
+                           {'jql': '((updated >= ' + d1f + '  and updated < ' + d2f + ')' 
+                            + ' or (worklogdate >= ' + d1f + ' and worklogdate < ' + d2f + '))'
+                            + 'and project in(' + projects + ')'
+                           },
+                           fields, 'changelog', 50);
+    }    
+  },
   
-  
+  writeWorkLog: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(key,time,comment) {
+      path = 'api/2/issue/' + key + '/worklog'
+      var data = {'comment': comment,
+                  'timeSpent': time
+                 };
+      try {
+        var result = this.execute(path, 'post', data);
+        return result;
+      }
+      catch(e) {
+        throw this.decodeJiraError(e,'<br/>');
+      }
+    }
+  },  
+
+  decodeError: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(e,separator) {
+      separator = separator || '\n';
+      if( !isUndefined(e.message)) {
+        try {
+          var msg = JSON.parse(e.message);
+          var msgstring = msg.errorMessages.join(separator);
+          for( var k in msg.errors )
+            msgstring += separator + ' ' + k + ': ' + msg.errors[k];
+          return msgstring;
+        }
+        catch(e2) {
+          return e.message;
+        }
+      }
+      else {
+        return e.toString();
+      }
+    }  
+  }  
 });
 
 
