@@ -28,6 +28,21 @@ Object.defineProperties(Fields.prototype, {
       return Fields.apply(this.filter(function(f){return names.indexOf(f.name)>=0;}));
     }        
   },
+  getSubset: {
+    enumerable:false,
+    writable:false,
+    configurable:false,
+    value: function() {
+      var names = isArray(arguments[0])? arguments[0] : arguments;
+      var result = [];
+      for( var cnt = 0 ; cnt < names.length ; cnt++ ) {
+        var tmp = this._internalMap[names[cnt]];
+        if( !isUndefined(tmp) )
+          result.push(tmp);
+      }
+      return Fields.apply(result);
+    }        
+  },
   labels: {
     enumerable: false,
     configurable:false,
@@ -57,5 +72,31 @@ Object.defineProperties(Fields.prototype, {
     value: function(obj) {
       return this.map(function(f){return f.extractFormattedValue(obj);});
     }    
+  },
+  mapValuesToObject: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(obj) {
+      var result = {};
+      for( var cnt = 0 ; cnt < this.length ; cnt++ ) {
+        var f = this[cnt];
+        result[f.name] = f.extractValue(obj);
+      }
+      return result;
+    }
+  },
+  mapFormattedValuesToObject: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(obj) {
+      var result = {};
+      for( var cnt = 0 ; cnt < this.length ; cnt++ ) {
+        var f = this[cnt];
+        result[f.name] = f.extractFormattedValue(obj);
+      }
+      return result;
+    }
   }
 });
