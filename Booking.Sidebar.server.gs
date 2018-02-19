@@ -3,7 +3,7 @@ function showBookingSidebar() {
   
   if( !Globals.DISABLE_HARVEST ) {
     var me = TheHarvestConnection_v1.whoAmI();
-    var projects = TheHarvestConnection_v2.fetchProjects(me.id);
+    var projects = TheHarvestConnection_v2.fetchProjects(me.user.id);
     sidebar.harvestProjects = projects.project_assignments.map(function(v){
                                 return HarvestFields_v2.clientprojecttasks.mapValuesToObject(v);
                               });
@@ -94,30 +94,28 @@ function getSelectedHarvestData(row) {
 /* Click-Handler für Buttons der Sidebar */
 
 function createJiraWorklog(data) {
-  putJiraWorkLog(data.id,data.time,data.comment);
-  //putJiraWorkLog('FUNT-10',data.time,data.comment);
+  TheJiraConnection.writeJiraWorkLog(data.id,data.time,data.comment);
   return false;
 }
 
 function createHarvestBooking(data) {
   if(Globals.DISABLE_HARVEST) throw "nicht aktiv.";
 
-  createHarvestTimeEntry(data.projectid, data.taskid, data.hours, data.notes, data.spentat);
+  TheHarvestConnection_v1.createHarvestTimeEntry(data.projectid, data.taskid, data.hours, data.notes, data.spentat);
   return false;
 }
 
 function updateHarvestBooking(data) {
   if(Globals.DISABLE_HARVEST) throw "nicht aktiv.";
 
-LogData('updateHarvest',data);
-  updateHarvestTimeEntry(data.id, data.projectid, data.taskid, data.hours, data.notes, data.spentat);
+  TheHarvestConnection_v1.updateHarvestTimeEntry(data.id, data.projectid, data.taskid, data.hours, data.notes, data.spentat);
   return false;
 }
 
 function deleteHarvestBooking(id) {
   if(Globals.DISABLE_HARVEST) throw "nicht aktiv.";
 
-  deleteHarvestTimeEntry(id)
+  TheHarvestConnection_v1.deleteHarvestTimeEntry(id)
   return false;
 }
 

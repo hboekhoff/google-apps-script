@@ -39,6 +39,5 @@ function loadDataStep2() {
   if( Globals.DISABLE_HARVEST )
     getBookings();
   else
-    Globals.HarvestConnection.openAndRun('getBookings');
-   
+    TheHarvestConnection_v1.open('getBookings');
 }

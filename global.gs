@@ -1,5 +1,5 @@
 var Globals = new function () {
-  this.DISABLE_HARVEST = true;
+  this.DISABLE_HARVEST = false;
 
   this.JIRA_FIRST_COLUMN = 1;
   this.JIRA_LAST_COLUMN = 5;

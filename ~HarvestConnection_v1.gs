@@ -38,10 +38,11 @@ Object.defineProperties(HarvestConnection_v1.prototype,{
     writable: false,
     enumerable: false,
     configurable: false,
-    value: function(path,params) {
+    value: function(path,method,params) {
+      method = method || 'get';
       params = params || {};
 
-      var data = this.connection.execute(path, 'get', params);
+      var data = this.connection.execute(path, method, params);
 
       return data;
     }
@@ -54,6 +55,62 @@ Object.defineProperties(HarvestConnection_v1.prototype,{
     value: function(path,params) {
       var path = 'account/who_am_i';
       return this.connection.execute(path, 'get');
+    }
+  },
+  createHarvestTimeEntry: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(projectid,taskid,hours,notes,date) {
+      var path = "daily/add";
+      var data = {'notes': notes,
+                  'hours': hours,
+                  'project_id': projectid,
+                  'task_id': taskid,
+                  'spent_at': formatDate(new Date(date || new Date()), 'YYYY-MM-dd')
+                 };
+      try {
+        this.execute( path, 'post', data);
+      }
+      catch(e) {
+        LogData('can not create harvest booking',e);
+        throw e;
+      }
+    }
+  },
+  updateHarvestTimeEntry: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(id, projectid, taskid, hours, notes, date) {
+      var path = "daily/update/" + id;
+      var params = { 'project_id': projectid,
+                     'task_id': taskid,
+                     'notes': notes,
+                     'spent_at': formatDate(new Date(date),'YYYY-MM-dd'),
+                     'hours': hours };
+      try {
+        return this.execute( path, 'post', params );
+      }
+      catch(e) {
+        LogData('can not update harvest booking',e);
+        throw e;
+      }
+    }
+  },
+  deleteHarvestTimeEntry: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(id) {
+      var path = "daily/delete/" + id;
+      try {
+        this.execute( path, 'delete' );
+      }
+      catch(e) {
+        LogData('can not delete harvest booking',e);
+        throw e;
+      }
     }
   }
 

@@ -161,7 +161,11 @@ var HarvestFields_v2 = new function() {
     new Field('clientName', 'client.name', "Kunde"),
     new Field('projectId', 'project.id', 'Projekt-ID'),
     new Field("projectName", 'project.name', "Projektname"),
-    new Field('tasks', "task_assignments.*", "Aufgaben", function(v){return {'taskId':v.task.id, 'name':v.task.name,'billable':v.billable};})
+    new Field('tasks', 
+              ['task_assignments','*',
+               {'taskId':'task.id', 
+                'name':'task.name',
+                'billable':'billable'}], 
+              'Aufgaben', function(v){return JSON.stringify(v);/*{'taskId':v.task.id, 'name':v.task.name,'billable':v.billable};*/})
   );
-  
 }();

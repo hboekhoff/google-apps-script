@@ -8,8 +8,9 @@ function test_harvestExec() {
   //LogData('result',r);
   var r = h.whoAmI();
   LogData(r);
-  r = h.fetchProjects(r.id,true);
+  r = h.fetchTimeEntries(r.id,'2017-08-21');
   LogData(r);
+  
 }
 
 function  test_harvestOpenCallback(name,data) {

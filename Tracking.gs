@@ -21,27 +21,30 @@ function getHarvestBookings(date) {
   if( Globals.DISABLE_HARVEST ) return;
 
   clearHarvestContent();
-  var bookings = TheHarvestConnection_v2.fetchTimeEntries(date);
+  var user = TheHarvestConnection_v1.whoAmI().user.id;
+  var bookings = TheHarvestConnection_v2.fetchTimeEntries(user,date);
 
-  Output.writeTableHeader(Globals.MyTrackingSheet, Globals.REPORT_HEADER_ROW, Globals.HARVEST_FIRST_COLUMN, HarvestFields.BookingFields );
-  Output.writeToTable(Globals.MyTrackingSheet, Globals.FIRST_REPORT_ROW, Globals.HARVEST_FIRST_COLUMN, bookings.day_entries, HarvestFields.BookingFields );
+  Output.writeTableHeader(Globals.MyTrackingSheet, Globals.REPORT_HEADER_ROW, Globals.HARVEST_FIRST_COLUMN, HarvestFields_v2.TimeEntryFields );
+  if( !isUndefined(bookings.time_entries) && bookings.time_entries.length > 0 )
+    Output.writeToTable(Globals.MyTrackingSheet, Globals.FIRST_REPORT_ROW, Globals.HARVEST_FIRST_COLUMN, bookings.time_entries, HarvestFields_v2.TimeEntryFields );
 }
 
 function getJiraBookings(date) {
-  clearJiraContent();
-  try{
-    var issues = TheJiraConnection.fetchIssuesByChangeDate(date,Globals.Properties.get('JiraProjects').value, JiraFields).issues;
-    var user = TheJiraConnection.whoAmI().name;
-  
-    collectEvents(user, date, issues);
-    issues = issues.filter(function(v){return v.bookingsToday > 0 || v.aggregated != ''});
-  
-    var oputputfields = JiraFields.getSubset('issuedata', 'key', 'summary', 'bookingsToday', 'aggregatedActions');
-    Output.writeTableHeader(Globals.MyTrackingSheet, Globals.REPORT_HEADER_ROW, Globals.JIRA_FIRST_COLUMN, oputputfields);
-    Output.writeToTable(Globals.MyTrackingSheet, Globals.FIRST_REPORT_ROW, Globals.JIRA_FIRST_COLUMN, issues, oputputfields);
-  } catch(e) {
-    LogData(e,true);
-  }
+   clearJiraContent();
+try{
+  var issues = TheJiraConnection.fetchIssuesByChangeDate(date,Globals.Properties.get('JiraProjects').value, JiraFields).issues;
+  var user = RequestBasicAuthentification.readCache('JIRA').username;
+
+  collectEvents(user, date, issues);
+  issues = issues.filter(function(v){return v.bookingsToday > 0 || v.aggregated != ''});
+
+  var oputputfields = JiraFields.getSubset('issuedata', 'key', 'summary', 'bookingsToday', 'aggregatedActions');
+LogData(oputputfields);
+  Output.writeTableHeader(Globals.MyTrackingSheet, Globals.REPORT_HEADER_ROW, Globals.JIRA_FIRST_COLUMN, oputputfields);
+  Output.writeToTable(Globals.MyTrackingSheet, Globals.FIRST_REPORT_ROW, Globals.JIRA_FIRST_COLUMN, issues, oputputfields);
+} catch(e) {
+  LogData(e,true);
+}
 }
 
 function collectEvents(user, date, issues) {
