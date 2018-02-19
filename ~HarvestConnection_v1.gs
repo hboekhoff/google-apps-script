@@ -57,7 +57,7 @@ Object.defineProperties(HarvestConnection_v1.prototype,{
       return this.connection.execute(path, 'get');
     }
   },
-  createHarvestTimeEntry: {
+  createTimeEntry: {
     writable: false,
     enumerable: false,
     configurable: false,
@@ -78,7 +78,7 @@ Object.defineProperties(HarvestConnection_v1.prototype,{
       }
     }
   },
-  updateHarvestTimeEntry: {
+  updateTimeEntry: {
     writable: false,
     enumerable: false,
     configurable: false,
@@ -98,7 +98,7 @@ Object.defineProperties(HarvestConnection_v1.prototype,{
       }
     }
   },
-  deleteHarvestTimeEntry: {
+  deleteTimeEntry: {
     writable: false,
     enumerable: false,
     configurable: false,

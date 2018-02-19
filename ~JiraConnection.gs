@@ -108,7 +108,7 @@ Object.defineProperties(JiraConnection.prototype,{
     }    
   },
   
-  writeJiraWorkLog: {
+  writeWorkLog: {
     writable: false,
     enumerable: false,
     configurable: false,
@@ -127,7 +127,7 @@ Object.defineProperties(JiraConnection.prototype,{
     }
   },  
 
-  decodeJiraError: {
+  decodeError: {
     writable: false,
     enumerable: false,
     configurable: false,
