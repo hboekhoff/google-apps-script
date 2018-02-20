@@ -214,6 +214,8 @@ function initDocument() {
   setRangeProperties(sheet,2,3,2,4,'#ffd966','#000000','bold')
     .merge()
     .setFontSize(18)
+    .setNumberFormat('d". "mmmm" "yyyy')
+    .setHorizontalAlignment('right')
     .setValue('gebucht');
   setRangeProperties(sheet,2,5,2,5,'#ffe599','#000000','bold')
     .setFontSize(18)
@@ -222,6 +224,7 @@ function initDocument() {
     
   setRangeProperties(sheet,3,3,3,4,'#6d9eeb','#ffffff','bold')
     .merge()
+    .setHorizontalAlignment('right')
     .setValue('gebucht in JIRA');
   setRangeProperties(sheet,3,5,3,5,'#cfe2f3','#0000ff','bold')
     .setNumberFormat('[h]:mm')
@@ -229,6 +232,7 @@ function initDocument() {
   
   setRangeProperties(sheet,4,3,4,4,'#e06666','#ffffff','bold')
     .merge()
+    .setHorizontalAlignment('right')
     .setValue('gebucht in Harvest');
   setRangeProperties(sheet,4,5,4,5,'#f4cccc','#a61c00','bold')
     .setNumberFormat('[h]:mm')
