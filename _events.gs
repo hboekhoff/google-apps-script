@@ -1,4 +1,6 @@
 function onOpen() {
+  initDocument();
+  
   var ui = SpreadsheetApp.getUi();
   var menu = ui.createMenu('Tracking')
               .addItem('Heute gebucht', 'startLoadingToday')

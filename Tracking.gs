@@ -166,8 +166,91 @@ function isSameDay( d1, d2 ) {
 
 
 
+function initDocument() {
+  if( !isUndefined( Globals.MyTrackingSheet ) ) return;
 
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet('Tracking');
 
+  // Kopfbereich
+  setRangeProperties(sheet,1,1,Globals.REPORT_HEADER_ROW,null,'#d9d9d9');
+  // Überschrift - JIRA
+  setRangeProperties(sheet,
+                     Globals.REPORT_HEADER_ROW,
+                     Globals.JIRA_FIRST_COLUMN,
+                     Globals.REPORT_HEADER_ROW,
+                     Globals.JIRA_LAST_COLUMN,
+                     '#6d9eeb','#ffffff','bold');
+  // Überschrift - Harvest
+  setRangeProperties(sheet,
+                     Globals.REPORT_HEADER_ROW,
+                     Globals.HARVEST_FIRST_COLUMN,
+                     Globals.REPORT_HEADER_ROW,
+                     Globals.HARVEST_LAST_COLUMN,
+                     '#e06666','#ffffff','bold');
+  // grauer Trennbalken
+  setRangeProperties(sheet,
+                     Globals.REPORT_HEADER_ROW,
+                     Globals.JIRA_LAST_COLUMN+1,
+                     null,
+                     Globals.HARVEST_FIRST_COLUMN-1,
+                     '#999999');
+  // Zeitspalte - JIRA
+  setRangeProperties(sheet,
+                     Globals.FIRST_REPORT_ROW,
+                     Globals.JIRA_TIME_COLUMN,
+                     null,
+                     Globals.JIRA_TIME_COLUMN,
+                     '#cfe2f3','#0000ff','bold')
+    .setNumberFormat('[h]:mm');
+  // Zeitspalte - Harvest
+  setRangeProperties(sheet,
+                     Globals.FIRST_REPORT_ROW,
+                     Globals.HARVEST_TIME_COLUMN,
+                     null,
+                     Globals.HARVEST_TIME_COLUMN,
+                     '#f4cccc','#a61c00','bold')
+    .setNumberFormat('[h]:mm');
+  
+  setRangeProperties(sheet,2,3,2,4,'#ffd966','#000000','bold')
+    .merge()
+    .setFontSize(18)
+    .setValue('gebucht');
+  setRangeProperties(sheet,2,5,2,5,'#ffe599','#000000','bold')
+    .setFontSize(18)
+    .setNumberFormat('[h]:mm')
+    .setFormulaR1C1('=sum(R[1]C:R[2]C)');
+    
+  setRangeProperties(sheet,3,3,3,4,'#6d9eeb','#ffffff','bold')
+    .merge()
+    .setValue('gebucht in JIRA');
+  setRangeProperties(sheet,3,5,3,5,'#cfe2f3','#0000ff','bold')
+    .setNumberFormat('[h]:mm')
+    .setFormulaR1C1('=sum(R'+Globals.FIRST_REPORT_ROW+'C'+Globals.JIRA_TIME_COLUMN+':C'+Globals.JIRA_TIME_COLUMN+')');
+  
+  setRangeProperties(sheet,4,3,4,4,'#e06666','#ffffff','bold')
+    .merge()
+    .setValue('gebucht in Harvest');
+  setRangeProperties(sheet,4,5,4,5,'#f4cccc','#a61c00','bold')
+    .setNumberFormat('[h]:mm')
+    .setFormulaR1C1('=sum(R'+Globals.FIRST_REPORT_ROW+'C'+Globals.HARVEST_TIME_COLUMN+':C'+Globals.HARVEST_TIME_COLUMN+')');
+  
+  setRangeProperties(sheet,1,1).setVerticalAlignment('top');
+  
+  sheet.setFrozenRows(Globals.REPORT_HEADER_ROW);
+  sheet.hideColumns(Globals.JIRA_FIRST_COLUMN);
+  sheet.hideColumns(Globals.HARVEST_FIRST_COLUMN);
 
+  sheet.setColumnWidth(Globals.JIRA_LAST_COLUMN+1,10);
+}
 
+function setRangeProperties(sheet,r1,c1,lr,lc,bc,fc,fw) {
+  if( isUndefined(lr) || lr == -1 ) lr = sheet.getMaxRows();
+  if( isUndefined(lc) || lc == -1 ) lc = sheet.getMaxColumns();
 
+  var range = sheet.getRange(r1,c1,lr-r1+1,lc-c1+1);
+  if( !isUndefined(bc) ) range.setBackground(bc);
+  if( !isUndefined(fc) ) range.setFontColor(fc);
+  if( !isUndefined(fw) ) range.setFontWeight(fw);
+  
+  return range;
+}
