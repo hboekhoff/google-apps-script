@@ -95,28 +95,28 @@ function getSelectedHarvestData(row) {
 /* Click-Handler für Buttons der Sidebar */
 
 function createJiraWorklog(data) {
-  TheJiraConnection.writeJiraWorkLog(data.id,data.time,data.comment);
+  TheJiraConnection.writeWorkLog(data.id,data.time,data.comment);
   return false;
 }
 
 function createHarvestBooking(data) {
   if(Globals.DISABLE_HARVEST) throw "nicht aktiv.";
 
-  TheHarvestConnection_v1.createHarvestTimeEntry(data.projectid, data.taskid, data.hours, data.notes, data.spentat);
+  TheHarvestConnection_v1.createTimeEntry(data.projectid, data.taskid, data.hours, data.notes, data.spentat);
   return false;
 }
 
 function updateHarvestBooking(data) {
   if(Globals.DISABLE_HARVEST) throw "nicht aktiv.";
 
-  TheHarvestConnection_v1.updateHarvestTimeEntry(data.id, data.projectid, data.taskid, data.hours, data.notes, data.spentat);
+  TheHarvestConnection_v1.updateTimeEntry(data.id, data.projectid, data.taskid, data.hours, data.notes, data.spentat);
   return false;
 }
 
 function deleteHarvestBooking(id) {
   if(Globals.DISABLE_HARVEST) throw "nicht aktiv.";
 
-  TheHarvestConnection_v1.deleteHarvestTimeEntry(id)
+  TheHarvestConnection_v1.deleteTimeEntry(id)
   return false;
 }
 

@@ -2,11 +2,8 @@ function getBookings() {
   var date = Globals.BookingDate.get('BookingDate').value;
 
   writeDate(date);
-LogData('performance','start');
   getJiraBookings(date);
-LogData('performance','jira');
   getHarvestBookings(date);
-LogData('performance','harvest');
 }
 
 function writeDate(d) {

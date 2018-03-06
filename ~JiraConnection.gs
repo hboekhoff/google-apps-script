@@ -83,8 +83,7 @@ Object.defineProperties(JiraConnection.prototype,{
     configurable: false,
     value: function(keys, fields,expand) {
       if( isArray(keys) ) keys = keys.join(',');
-
-return this.execute('api/2/search', 'get',
+      return this.execute('api/2/search', 'get',
                           {'jql': 'issuekey in (' + keys + ')'},
                           fields, expand);
     }
@@ -110,7 +109,7 @@ return this.execute('api/2/search', 'get',
     }    
   },
   
-  writeJiraWorkLog: {
+  writeWorkLog: {
     writable: false,
     enumerable: false,
     configurable: false,
@@ -124,12 +123,12 @@ return this.execute('api/2/search', 'get',
         return result;
       }
       catch(e) {
-        throw this.decodeJiraError(e,'<br/>');
+        throw this.decodeError(e,'<br/>');
       }
     }
   },  
 
-  decodeJiraError: {
+  decodeError: {
     writable: false,
     enumerable: false,
     configurable: false,

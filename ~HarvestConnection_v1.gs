@@ -43,7 +43,6 @@ Object.defineProperties(HarvestConnection_v1.prototype,{
       params = params || {};
 
       var data = this.connection.execute(path, method, params);
-Logger.log(data);
       return data;
     }
   },
@@ -57,7 +56,7 @@ Logger.log(data);
       return this.connection.execute(path, 'get');
     }
   },
-  createHarvestTimeEntry: {
+  createTimeEntry: {
     writable: false,
     enumerable: false,
     configurable: false,
@@ -78,7 +77,7 @@ Logger.log(data);
       }
     }
   },
-  updateHarvestTimeEntry: {
+  updateTimeEntry: {
     writable: false,
     enumerable: false,
     configurable: false,
@@ -98,7 +97,7 @@ Logger.log(data);
       }
     }
   },
-  deleteHarvestTimeEntry: {
+  deleteTimeEntry: {
     writable: false,
     enumerable: false,
     configurable: false,
