@@ -74,48 +74,75 @@ Object.defineProperties(Object.prototype,
     enumerable: false,
     writable: false,
     value: function() {
+/*      function getPreparedAccessors(args) {
+        this._cache = this._cache || {};
+        var _key = JSON.stringify(args);
+        var accessors = this._cache[_key];
+        
+        if( !isUndefined(accessors) ) {
+          return accessors;
+        }
+        else {
+          return this._cache[_key] = prepareAccessors(args);
+        }
+      }
+*/
+      function prepareAccessors(args){
+        var accessors = [];
+        for(var cnt = 0 ; cnt < args.length ; cnt++ ){
+          var acc = args[cnt];
+          if( acc == null || acc == '' )
+            continue;
+          else if( isArray( acc ) ) 
+            accessors = accessors.concat(prepareAccessors(acc));
+          else if( isFunction( acc ) )
+            accessors.push(acc);
+          else if( isObject(acc) ) {
+            var tmpacc = {};
+            for( var key in acc ) {
+              tmpacc[key] = prepareAccessors([acc[key]]);
+            }
+          	accessors.push(tmpacc);
+          }
+          else
+            accessors = accessors.concat(acc.split('.'));
+        }
+        return accessors;
+      } // prepareAccessors
       function getNestedValueByArray(obj,accArray,start) {
         var tmpObj = obj;
-        var acc;
         for( var cnt = start ; tmpObj != null && cnt < accArray.length ; cnt++ ) {
-          acc = accArray[cnt];
-          if( acc == null )
-            continue;
-          else if( acc == '*' )
-            return getMultipleNestedValues( tmpObj, accArray, cnt + 1 );
-          else if( isArray( acc ) ) 
-            tmpObj = getNestedValueByArray( tmpObj, acc, 0 );
+          var acc = accArray[cnt];
+          if( acc == '*' )
+            return getMultipleNestedValues(tmpObj, accArray, cnt + 1);
           else if( isFunction( acc ) )
-            tmpObj = acc( tmpObj );
+            tmpObj = acc(tmpObj);
           else if( isObject( acc ) )
-          	tmpObj = mapNestedValuesToObject( obj, acc );
+          	tmpObj = mapNestedValuesToObject(tmpObj, acc);
           else {
-            var aacc = acc.split('.');
-            if( aacc.length > 1 ) 
-              tmpObj = getNestedValueByArray( tmpObj, aacc, 0 );
-            else
-              tmpObj = tmpObj[acc];
+            tmpObj = tmpObj[acc];
           }
         }
         return tmpObj;
       } // getNestedValueByArray()
       function getMultipleNestedValues(obj,accArray,start) {
-        var results = [];
+        var result = [];
         for( var key in obj ) {
-          results.push( getNestedValueByArray(obj[key],accArray,start) );
+          var tmpObj = getNestedValueByArray(obj[key],accArray,start);
+          if( !isUndefined(tmpObj) ) result.push(tmpObj);
         }
-        return results;
+        return isEmpty(result)? undefined : result;
       } // getMultipleNestedValues()
-      function mapNestedValuesToObject(obj,t) {
+      function mapNestedValuesToObject(obj,accObj) {
         var result = {};
-        for( var k in t ) {
-          var tmpObj = getNestedValueByArray(obj, [t[k]], 0);
-          if( !isUndefined(tmpObj) ) result[k] = tmpObj;
+        for( var key in accObj ) {
+          var tmpObj = getNestedValueByArray(obj, accObj[key], 0);
+          if( !isUndefined(tmpObj) ) result[key] = tmpObj;
         }
-        return result;
-      }
+        return isEmpty(result)? undefined : result;
+      } // mapNestedValuesToObject
       // -- hier gehts los ----------------------
-      return getNestedValueByArray( this, arguments, 0 );
+      return getNestedValueByArray(this, prepareAccessors(arguments), 0);
     }
   },
   assign: {
@@ -142,15 +169,14 @@ Object.defineProperties(Object.prototype,
 			    return JSON.stringify(data);
 		  }
 		  function joinArray(key,data,encode) {
-		    if( data.length = 0 ) 
-		    	return '';
-				else if( encode ) 
-			    return data.reduce( function(a,c){a += '&'+key+'='+encodeURIComponent(c);}, '' )
-			    					 .substring(2+key.length);
-			  else 
-					return data.join('&'+key+'=');
-			  
-		  }
+            if( data.length == 0 ) 
+              return '';
+            else if( encode ) 
+              return data.reduce( function(a,c){return a+'&'+key+'='+encodeURIComponent(c);}, '' )
+                         .substring(2+key.length);
+            else 
+              return data.join('&'+key+'=');
+          }
 		  
 		  if( isUndefined(encode) ) encode = true;
 		  

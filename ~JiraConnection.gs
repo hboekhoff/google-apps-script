@@ -81,10 +81,11 @@ Object.defineProperties(JiraConnection.prototype,{
     enumerable: false,
     writable: false,
     configurable: false,
-    value: function(keys, fields) {
+    value: function(keys, fields,expand) {
+      if( isArray(keys) ) keys = keys.join(',');
       return this.execute('api/2/search', 'get',
-                          {'jql': 'issuekey in (' + keys.join() + ')'},
-                          fields);
+                          {'jql': 'issuekey in (' + keys + ')'},
+                          fields, expand);
     }
   },
     
@@ -92,7 +93,7 @@ Object.defineProperties(JiraConnection.prototype,{
     enumerable: false,
     writable: false,
     configurable: false,
-    value: function(date,projects,fields) {
+    value: function(date,projects,fields,expand) {
       var d1 = new Date(date);
       var d2 = new Date(date);
       d2.setDate(d2.getDate() + 1)  ;
@@ -104,7 +105,7 @@ Object.defineProperties(JiraConnection.prototype,{
                             + ' or (worklogdate >= ' + d1f + ' and worklogdate < ' + d2f + '))'
                             + 'and project in(' + projects + ')'
                            },
-                           fields, 'changelog', 50);
+                           fields, expand, 50);
     }    
   },
   
@@ -122,7 +123,7 @@ Object.defineProperties(JiraConnection.prototype,{
         return result;
       }
       catch(e) {
-        throw this.decodeJiraError(e,'<br/>');
+        throw this.decodeError(e,'<br/>');
       }
     }
   },  
