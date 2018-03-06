@@ -5,9 +5,9 @@ var lastJiraData = undefined;
 var lastHarvestData = undefined;
 
 function updateSidebar(data) {
-console.log('updateSidebar: ' + !(data == "unchanged"));
   if( data == "unchanged" ) return;
-console.log(data);
+
+  console.log(JSON.stringify(data));
 
   clearErrorMessage();
   lastHashcode = data.hashcode;
@@ -95,7 +95,15 @@ function displayHarvest(data) {
 
   $('#harvest').show();
 }
-function displayNewHarvest(data) {
+function displayNewHarvest(key,comment,time) {
+  $('#nh-hours').val(time || '');
+  if( key != undefined ) {
+    $('#nh-url').val(jiraDomain + 'browse/' + key);
+    $('#nh-notes').val('[#' + key + ']' + (comment  || ''));
+  }
+  else {
+    $('#nh-url,#nh-notes').val('');
+  }
   $('#new-harvest').show();
 }
 
@@ -205,10 +213,6 @@ function unclickButton(id) {
   $(id).removeClass('clicked');
 }
 
-
-
-
-
 function createJiraWorklog() {
   clickButton('#j-save');
   var data = {'id':lastJiraData.key,
@@ -233,6 +237,18 @@ function createJiraWorklogSuccess() {
 function createJiraWorklogFailure(e) {
   showErrorMessage(e);
   unclickButton('#j-save');
+}
+
+function switchToHarvest() {
+  $('#jira').hide();
+  if( lastJiraData != undefined )
+    displayNewHarvest(lastJiraData.key,
+                      lastJiraData.summary,
+                      lastJiraData.mytimespenttoday);
+  else
+    displayNewHarvest();
+  
+  return false;
 }
 
 function updateHarvestBooking() {
@@ -333,10 +349,11 @@ $(document).ready(function(){
   
   $('#j-reset').click(function(){$('#j-remaining,#j-time,#j-comment').val('');return false;});
   $('#j-save').click(createJiraWorklog);
+  $('#j-toharvest').click(switchToHarvest);
   $('#h-delete').click(deleteHarvestBooking);
   $('#h-reset').click(function(){displayHarvest(lastHarvestData);return false;});
   $('#h-update').click(updateHarvestBooking);
-  $('#nh-reset').click(function(){$('#nh-hours,#nh-notes').val('');return false;});
+  $('#nh-reset').click(function(){$('#nh-hours,#nh-url,#nh-notes').val('');return false;});
   $('#nh-create').click(createHarvestBooking);
   $('#initialize').click()
   //$('.radiospan>span').click(clickRadiospan);

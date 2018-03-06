@@ -4,8 +4,6 @@ function test_harvestOpen() {
 }
 function test_harvestExec() {
   var h = new HarvestConnection_v2('test_harvest');
-  //var r = h.execute('api/2/search',{jql:'issuekey=fdsupport-1001'});
-  //LogData('result',r);
   var r = h.whoAmI();
   LogData(r);
   r = h.fetchTimeEntries(r.id,'2017-08-21');

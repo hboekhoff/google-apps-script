@@ -1,5 +1,3 @@
-Logger.log('Property');
-
 /**  
  *  Property class provides an alternative way to handle document properties
  *  Bundled with the property-dialog they are easily displayed and editable.

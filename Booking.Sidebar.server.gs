@@ -11,7 +11,9 @@ function showBookingSidebar() {
   else
     sidebar.harvestProjects = [];
     
-  LogData('sidebar.harvestProjects',sidebar.harvestProjects);
+  var jiraDomain = Globals.Properties.get('jiraDomain').value;
+  if( jiraDomain.charAt(jiraDomain.length-1) != '/' ) jiraDomain += '/'
+  sidebar.jiraDomain = jiraDomain;
 
   var html = sidebar.evaluate().setTitle('Buchungen');
   
@@ -28,8 +30,7 @@ function getSidebarData(oldHashcode) {
     result = getSelectedData();
     result['bookingDate'] = bookingDate;
   }
-//LogData(result);
- var newHashcode = getHashCode(result);
+  var newHashcode = getHashCode(result);
 
   if( oldHashcode == newHashcode )
     return "unchanged";
@@ -94,28 +95,28 @@ function getSelectedHarvestData(row) {
 /* Click-Handler für Buttons der Sidebar */
 
 function createJiraWorklog(data) {
-  TheJiraConnection.writeWorkLog(data.id,data.time,data.comment);
+  TheJiraConnection.writeJiraWorkLog(data.id,data.time,data.comment);
   return false;
 }
 
 function createHarvestBooking(data) {
   if(Globals.DISABLE_HARVEST) throw "nicht aktiv.";
 
-  TheHarvestConnection_v1.createTimeEntry(data.projectid, data.taskid, data.hours, data.notes, data.spentat);
+  TheHarvestConnection_v1.createHarvestTimeEntry(data.projectid, data.taskid, data.hours, data.notes, data.spentat);
   return false;
 }
 
 function updateHarvestBooking(data) {
   if(Globals.DISABLE_HARVEST) throw "nicht aktiv.";
 
-  TheHarvestConnection_v1.updateTimeEntry(data.id, data.projectid, data.taskid, data.hours, data.notes, data.spentat);
+  TheHarvestConnection_v1.updateHarvestTimeEntry(data.id, data.projectid, data.taskid, data.hours, data.notes, data.spentat);
   return false;
 }
 
 function deleteHarvestBooking(id) {
   if(Globals.DISABLE_HARVEST) throw "nicht aktiv.";
 
-  TheHarvestConnection_v1.deleteTimeEntry(id)
+  TheHarvestConnection_v1.deleteHarvestTimeEntry(id)
   return false;
 }
 

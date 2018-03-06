@@ -43,7 +43,7 @@ Object.defineProperties(HarvestConnection_v1.prototype,{
       params = params || {};
 
       var data = this.connection.execute(path, method, params);
-
+Logger.log(data);
       return data;
     }
   },
@@ -57,7 +57,7 @@ Object.defineProperties(HarvestConnection_v1.prototype,{
       return this.connection.execute(path, 'get');
     }
   },
-  createTimeEntry: {
+  createHarvestTimeEntry: {
     writable: false,
     enumerable: false,
     configurable: false,
@@ -78,7 +78,7 @@ Object.defineProperties(HarvestConnection_v1.prototype,{
       }
     }
   },
-  updateTimeEntry: {
+  updateHarvestTimeEntry: {
     writable: false,
     enumerable: false,
     configurable: false,
@@ -98,7 +98,7 @@ Object.defineProperties(HarvestConnection_v1.prototype,{
       }
     }
   },
-  deleteTimeEntry: {
+  deleteHarvestTimeEntry: {
     writable: false,
     enumerable: false,
     configurable: false,
@@ -112,6 +112,21 @@ Object.defineProperties(HarvestConnection_v1.prototype,{
         throw e;
       }
     }
+  },
+  fetchTimeEntry: {
+    writable: false,
+    enumerable: false,
+    configurable: false,
+    value: function(id) {
+      var path = 'daily/show/' + id;
+      try {
+      Logger.log(path);
+        return this.execute( path, 'get' );
+      }
+      catch(e) {
+        LogData('can not retrieve harvest booking',e);
+        //throw e;
+      }
+    }
   }
-
 });

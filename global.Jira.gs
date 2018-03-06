@@ -15,20 +15,21 @@ var JiraFields = new Fields(
   new Field('timespent', 'fields.timespent', 'Benötigte Zeit', function(value){return value/86400;},'[h]:mm'),
   new Field('aggregatetimespent', 'fields.aggregatetimespent', 'Benötigte Zeit inkl. Unteraufgaben', function(value){return value/86400;},'[h]:mm'),
   new Field('summary','fields.summary', 'Zusammenfassung'),
-  new Field('comment', 'fields.comment.comments.*', 'Kommentar', function(value){return isUndefined(value)?
-                                                                                          undefined :
-                                                                                          {'author': value.author.key,
-                                                                                           'time': value.created,
-                                                                                           'type': 'comment',
-                                                                                           'description': value.body }}),
+  new Field('comment', 
+            ['fields.comment.comments.*',
+             {'author': 'author.key',
+              'time': 'created',
+              'type': function(){return 'comment';},
+              'description': 'body'
+             }], 'Kommentar'),
 // keine echten JIRA Felder - nur zur Ausgabe der aggregierten Daten
   new Field('bookingsToday', 'bookingsToday', 'gebucht', function(value){return value/86400;}), // in Datumsformat umrechnen
   new Field('bookingsTotal', 'bookingsTotal', 'insgesamt gebucht', function(value){return value/86400;}), // in Datumsformat umrechnen
   new Field('aggregatedActions','aggregated', 'Aktionen'),
   new Field('assignee','assignee', 'Bearbeiter'),
 
-  new Field('issuedata', 
-  					{'key':'key', 
+  new Field('issuedata',
+            {'key':'key', 
              'issuetype':'fields.issuetype.name',
              'issuetypeicon':'fields.issuetype.iconUrl',
              'status':'fields.status.name',
@@ -44,6 +45,4 @@ var JiraFields = new Fields(
              'assignee':'fields.assignee.displayName',
              'assigneeAvatar':'fields.assignee.avatarUrls.32x32'
              }, 'TicketInfoData', function(v){return JSON.stringify(v);})
-
-
 );

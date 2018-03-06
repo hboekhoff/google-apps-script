@@ -9,6 +9,7 @@
   <body>
    <script>
      var harvestProjects = <?!=JSON.stringify(harvestProjects) ?>;
+     var jiraDomain = <?!=JSON.stringify(jiraDomain) ?>;
    </script>   
     <?!= include('Booking.Sidebar.js'); ?>
     <div id="not-initialized">
@@ -99,6 +100,7 @@
           <p class="buttons">
             <button class="update" name="j-save" id="j-save">Speichern</button>
             <button class="reset" name="j-reset" id="j-reset">Zurücksetzen</button>
+            <button class="blue" name="j-toharvest" id="j-toharvest"> In Harvest buchen</button>
           </p>
         </div>
       </form>

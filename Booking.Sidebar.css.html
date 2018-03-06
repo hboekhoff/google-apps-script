@@ -45,6 +45,20 @@ button.reset {
 button.reset.clicked {
   background: linear-gradient(to top, #eee, #aaa);
 }
+button.blue {
+  background: linear-gradient(#4d90fe,#357ae8);
+  color: #fff;
+  vertical-align: middle;
+}
+button.blue::before {
+  content: "🕓 ";
+  font-weight: normal;
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+button.blue.clicked {
+  background: linear-gradient(to top, #4d90fe,#357ae8);
+}
 
 
 label {

@@ -2,9 +2,11 @@ function getBookings() {
   var date = Globals.BookingDate.get('BookingDate').value;
 
   writeDate(date);
-
+LogData('performance','start');
   getJiraBookings(date);
+LogData('performance','jira');
   getHarvestBookings(date);
+LogData('performance','harvest');
 }
 
 function writeDate(d) {
@@ -22,6 +24,7 @@ function getHarvestBookings(date) {
 
   clearHarvestContent();
   var user = TheHarvestConnection_v1.whoAmI().user.id;
+  //user = 1830688;
   var bookings = TheHarvestConnection_v2.fetchTimeEntries(user,date);
 
   Output.writeTableHeader(Globals.MyTrackingSheet, Globals.REPORT_HEADER_ROW, Globals.HARVEST_FIRST_COLUMN, HarvestFields_v2.TimeEntryFields );
@@ -30,25 +33,23 @@ function getHarvestBookings(date) {
 }
 
 function getJiraBookings(date) {
-   clearJiraContent();
-try{
-  var issues = TheJiraConnection.fetchIssuesByChangeDate(date,Globals.Properties.get('JiraProjects').value, JiraFields).issues;
-  var user = RequestBasicAuthentification.readCache('JIRA').username;
+  clearJiraContent();
+  try{
+    var issues = TheJiraConnection.fetchIssuesByChangeDate(date,Globals.Properties.get('JiraProjects').value, JiraFields, 'changelog').issues;
+    var user = RequestBasicAuthentification.readCache('JIRA').username;
+    //user = 'a.kremin';
 
-  collectEvents(user, date, issues);
-  issues = issues.filter(function(v){return v.bookingsToday > 0 || v.aggregated != ''});
-
-  var oputputfields = JiraFields.getSubset('issuedata', 'key', 'summary', 'bookingsToday', 'aggregatedActions');
-LogData(oputputfields);
-  Output.writeTableHeader(Globals.MyTrackingSheet, Globals.REPORT_HEADER_ROW, Globals.JIRA_FIRST_COLUMN, oputputfields);
-  Output.writeToTable(Globals.MyTrackingSheet, Globals.FIRST_REPORT_ROW, Globals.JIRA_FIRST_COLUMN, issues, oputputfields);
-} catch(e) {
-  LogData(e,true);
-}
+    collectEvents(user, date, issues);
+    issues = issues.filter(function(v){return v.bookingsToday > 0 || v.aggregated != ''});
+    var oputputfields = JiraFields.getSubset('issuedata', 'key', 'summary', 'bookingsToday', 'aggregatedActions');
+    Output.writeTableHeader(Globals.MyTrackingSheet, Globals.REPORT_HEADER_ROW, Globals.JIRA_FIRST_COLUMN, oputputfields);
+    Output.writeToTable(Globals.MyTrackingSheet, Globals.FIRST_REPORT_ROW, Globals.JIRA_FIRST_COLUMN, issues, oputputfields);
+  } catch(e) {
+    LogData(e,true);
+  }
 }
 
 function collectEvents(user, date, issues) {
-//LogData(issues);
   for( var cnt = 0 ; cnt < issues.length ; cnt++ ) {
     collectEventsForIssue(user, date, issues[cnt]);
   }
@@ -110,8 +111,6 @@ function getStatusChanges( event ) {
   return changes;
 }
 function getComments( issue, user ) {
-//LogData(issue);
-//  LogData(JiraFields.get('comment').extractFormattedValue( issue ));
   var values = JiraFields.get('comment').extractFormattedValue( issue );
   if( isUndefined(values) ) return [];
   if( !isArray(values) ) values = [values];
@@ -244,17 +243,27 @@ function initDocument() {
   sheet.hideColumns(Globals.JIRA_FIRST_COLUMN);
   sheet.hideColumns(Globals.HARVEST_FIRST_COLUMN);
 
+  sheet.setColumnWidth(Globals.JIRA_FIRST_COLUMN+1,130);
+    sheet.setColumnWidth(Globals.JIRA_FIRST_COLUMN+2,250);
+  sheet.setColumnWidth(Globals.JIRA_TIME_COLUMN,60);
+  sheet.setColumnWidth(Globals.JIRA_LAST_COLUMN,300);
+  
   sheet.setColumnWidth(Globals.JIRA_LAST_COLUMN+1,10);
+  
+  sheet.setColumnWidth(Globals.HARVEST_FIRST_COLUMN+1,200);
+  sheet.setColumnWidth(Globals.HARVEST_FIRST_COLUMN+2,100);
+  sheet.setColumnWidth(Globals.HARVEST_FIRST_COLUMN+3,300);
+  sheet.setColumnWidth(Globals.HARVEST_TIME_COLUMN,60);
 }
 
-function setRangeProperties(sheet,r1,c1,lr,lc,bc,fc,fw) {
-  if( isUndefined(lr) || lr == -1 ) lr = sheet.getMaxRows();
-  if( isUndefined(lc) || lc == -1 ) lc = sheet.getMaxColumns();
+function setRangeProperties(sheet,row1,col1,lastRow,lastCol,backColor,fontColor,fontWeight) {
+  if( isUndefined(lastRow) || lastRow == -1 ) lastRow = sheet.getMaxRows();
+  if( isUndefined(lastCol) || lastCol == -1 ) lastCol = sheet.getMaxColumns();
 
-  var range = sheet.getRange(r1,c1,lr-r1+1,lc-c1+1);
-  if( !isUndefined(bc) ) range.setBackground(bc);
-  if( !isUndefined(fc) ) range.setFontColor(fc);
-  if( !isUndefined(fw) ) range.setFontWeight(fw);
+  var range = sheet.getRange(row1,col1,lastRow-row1+1,lastCol-col1+1);
+  if( !isUndefined(backColor) ) range.setBackground(backColor);
+  if( !isUndefined(fontColor) ) range.setFontColor(fontColor);
+  if( !isUndefined(fontWeight) ) range.setFontWeight(fontWeight);
   
   return range;
 }

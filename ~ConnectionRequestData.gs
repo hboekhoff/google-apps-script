@@ -84,9 +84,8 @@ Object.defineProperties(ConnectionRequestData.prototype,{
       function appendJsonToUrl(url, data, encode) {
         if( isUndefined(data) ) 
           return url;
-          
+
         var params = data.toQueryString(encode);
-      
         if( params.length == 0 ) 
           return url;
         else if( url.indexOf("?") > 0 )

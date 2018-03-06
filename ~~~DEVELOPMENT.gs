@@ -10,7 +10,7 @@
  */
 
 // aktiviert vermehrtes Logging und in Dialogen werden zusätzliche Felder angezeigt 
-DEVELOPER_MODE = false;
+DEVELOPER_MODE = true;
 
 
 function DEV_createMenu() {

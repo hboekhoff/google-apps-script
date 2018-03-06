@@ -10,7 +10,6 @@ Object.defineProperties(RequestBasicAuthentification.prototype, {
     writable: false,
     configurable: false,
     value: function(connectionName,requestData,executeCallback,failureCallback) {
-      
       function execute(username, password, additionalHeaders) {
         var authHeader = BasicAuthentification.getBasicAuthentificationHeader(username,password);
         authHeader = Object.assign(authHeader, additionalHeaders);

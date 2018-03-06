@@ -27,6 +27,8 @@ Object.defineProperties(Output,{
     writable: false,
     configurable: false,
     value: function(sheet, row, column, dataArray, fields) {
+      if( dataArray.length == 0 || fields.length == 0 ) return;
+      
       var resultData = dataArray.map(function(v){
                          return fields.extractFormattedValues(v);
                        });
