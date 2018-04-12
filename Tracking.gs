@@ -1,3 +1,7 @@
+var DEV_USER = {'JiraUserName':'hboekhoff',
+                'HarvestUserId':null
+               };
+
 function getBookings() {
   var date = Globals.BookingDate.get('BookingDate').value;
 
@@ -21,7 +25,8 @@ function getHarvestBookings(date) {
 
   clearHarvestContent();
   var user = TheHarvestConnection_v1.whoAmI().user.id;
-  //user = 1830688;
+  if( DEVELOPER_MODE ) user = DEV_USER.HarvestUserId || user;
+
   var bookings = TheHarvestConnection_v2.fetchTimeEntries(user,date);
 
   Output.writeTableHeader(Globals.MyTrackingSheet, Globals.REPORT_HEADER_ROW, Globals.HARVEST_FIRST_COLUMN, HarvestFields_v2.TimeEntryFields );
@@ -34,7 +39,7 @@ function getJiraBookings(date) {
   try{
     var issues = TheJiraConnection.fetchIssuesByChangeDate(date,Globals.Properties.get('JiraProjects').value, JiraFields, 'changelog').issues;
     var user = RequestBasicAuthentification.readCache('JIRA').username;
-    //user = 'a.kremin';
+    if( DEVELOPER_MODE ) user = DEV_USER.JiraUserName || user;
 
     collectEvents(user, date, issues);
     issues = issues.filter(function(v){return v.bookingsToday > 0 || v.aggregated != ''});
@@ -210,9 +215,9 @@ function initDocument() {
   setRangeProperties(sheet,2,3,2,4,'#ffd966','#000000','bold')
     .merge()
     .setFontSize(18)
-    .setNumberFormat('d". "mmmm" "yyyy')
     .setHorizontalAlignment('right')
-    .setValue('gebucht');
+    .setValue('gebucht')
+    .setNumberFormat('dddd, d. MMMM yyyy');
   setRangeProperties(sheet,2,5,2,5,'#ffe599','#000000','bold')
     .setFontSize(18)
     .setNumberFormat('[h]:mm')

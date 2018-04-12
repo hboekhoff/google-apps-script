@@ -80,12 +80,45 @@ Object.defineProperties(ConnectionRequestData.prototype,{
     writable: false,
     configurable: false,
     enumerable: false,
-    value: function() {
-      function appendJsonToUrl(url, data, encode) {
+    value: function(encode) {
+      function nestedObjectToString(data) {
+        if( encode )
+          return encodeURIComponent(JSON.stringify(data));
+        else
+          return JSON.stringify(data);
+      }
+      function joinArray(key,data) {
+        if( data.length == 0 ) 
+          return '';
+        else if( encode ) 
+          return data.reduce( function(a,c){return a+'&'+key+'='+encodeURIComponent(c);}, '' )
+                     .substring(key.length + 2);
+        else 
+          return data.join('&'+key+'=');
+      }
+      function toQueryString(data) {
+        var result = '';
+        for( var key in data ) {
+          result += "&" + key;
+          var value = data[key];
+          if( !isUndefined(value) ) {
+            if( isArray(value) )
+              result += "=" + joinArray(key,value,encode);
+            else if( isObject(value) )
+              result += "=" + nestedObjectToString(value,encode);
+            else if( encode )
+              result += "=" + encodeURIComponent(value);
+            else 
+              result += "=" + value;
+          }
+        }
+        return result.substring(1);
+      }    
+      function appendJsonToUrl(url, data) {
         if( isUndefined(data) ) 
           return url;
 
-        var params = data.toQueryString(encode);
+        var params = toQueryString(data,encode);
         if( params.length == 0 ) 
           return url;
         else if( url.indexOf("?") > 0 )
@@ -94,6 +127,8 @@ Object.defineProperties(ConnectionRequestData.prototype,{
           return url + "?" + params;
       }
     
+      if( isUndefined(encode) ) encode = true;
+      
       var url = this.baseUrl + this.path;
       return (this.method.toLowerCase() == 'get')? 
                 appendJsonToUrl(url,this.payload) :
