@@ -1,5 +1,5 @@
 var Globals = new function () {
-  this.DISABLE_HARVEST = false;
+  this.DISABLE_HARVEST = true;
 
   this.JIRA_FIRST_COLUMN = 1;
   this.JIRA_LAST_COLUMN = 5;
@@ -16,6 +16,7 @@ var Globals = new function () {
     new Property('jiraDomain','text','JIRA Domain','Domain des JIRA-Systems.','https://sjira.funkemedien.de'),
     new Property('JiraProjects','text','JIRA Projekte','Kommaseparierte Liste der zu berücksichtigenden JIRA Projekte','FDC,FDH,FDSUPPORT,FDPB,FDA,FDB,FDCIT,FDNULL,FDEXTERN'),
     new Property('JiraMyActivityOnly','checkbox','Nur bearbeitete Tickets','Tickets ausblenden, die ich nicht selbst bearbeitet habe',false),
+    //new Property('harvestEnabled','checkbox','Harvest aktivieren',' ',true),
     new Property('harvestDomain','text','Harvest Domain','Domain des FunkeDigital Harvest Accounts.','https://funke.harvestapp.com'),
     new Property('harvestAccountId','text','Harvest Account','Account-ID des FunkeDigital Harvest Accounts.','706343'),
     new Property('harvestPrivateKey','text','Harvest Key','Authorisierungs-Schlüssel für den Zugriff auf Harvest.','')
