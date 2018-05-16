@@ -73,6 +73,17 @@ Object.defineProperties(JiraConnection.prototype,{
           data.issues = data.issues.concat(chunk.issues);
         }
       }
+      else if( !isUndefined(data.isLast) ) {
+        var chunk = data;
+        while( !chunk.isLast ) {
+          params.startAt = chunk.startAt + chunk.maxResults;
+          chunk = Globals.JiraConnection.execute( path, 'get', params );
+          data.values = data.values.concat(chunk.values);
+        }
+        data.total = data.maxResults = data.values.length;
+        data.isLast = true;
+      }
+      
       return data;
     }
   },
