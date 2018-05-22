@@ -87,16 +87,23 @@ Object.defineProperties(JiraConnection.prototype,{
       return data;
     }
   },
+  
+  search: {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function(jql, fields, expand, chunkSize) {
+      return this.execute('api/2/search', 'get', {'jql': jql}, fields, expand, chunkSize);
+    }
+  },
 
   fetchIssuesByKey: {
     enumerable: false,
     writable: false,
     configurable: false,
-    value: function(keys, fields,expand) {
+    value: function(keys, fields, expand) {
       if( isArray(keys) ) keys = keys.join(',');
-      return this.execute('api/2/search', 'get',
-                          {'jql': 'issuekey in (' + keys + ')'},
-                          fields, expand);
+      return this.search('issuekey in (' + keys + ')', fields, expand);
     }
   },
     
@@ -111,12 +118,10 @@ Object.defineProperties(JiraConnection.prototype,{
       
       var d1f = d1.format('YYYY-MM-dd');
       var d2f = d2.format('YYYY-MM-dd');
-      return this.execute('api/2/search', 'get', 
-                           {'jql': '((updated >= ' + d1f + '  and updated < ' + d2f + ')' 
-                            + ' or (worklogdate >= ' + d1f + ' and worklogdate < ' + d2f + '))'
-                            + 'and project in(' + projects + ')'
-                           },
-                           fields, expand, 50);
+      var jql = '((updated >= ' + d1f + '  and updated < ' + d2f + ')' 
+                + ' or (worklogdate >= ' + d1f + ' and worklogdate < ' + d2f + '))'
+                + 'and project in(' + projects + ')';
+      return this.search(jql, fields, expand, 50);
     }    
   },
   
@@ -138,6 +143,30 @@ Object.defineProperties(JiraConnection.prototype,{
       }
     }
   },  
+  
+  doTransition: {
+    writable: false, 
+    enumerable: false,
+    configurable: false,
+    value: function(key,transitionId,comment,fields) {
+      path = 'api/2/issue/' + key + '/transitions'
+      var data = { "transition": {"id":transitionId} };
+      
+      if( !isUndefined(comment) )
+        data["update"] = { "comment": [{ "add": { "body": comment } }] };
+      
+      if( !isUndefined( fields) )
+        data["fields"] = fields;
+
+      try {
+        var result = this.execute(path, 'post', data);
+        return result;
+      }
+      catch(e) {
+        throw this.decodeError(e,'<br/>');
+      }
+    }
+  },
 
   decodeError: {
     writable: false,
