@@ -16,6 +16,7 @@ var Globals = new function () {
     new Property('jiraDomain','text','JIRA Domain','Domain des JIRA-Systems.','https://sjira.funkemedien.de'),
     new Property('JiraProjects','text','JIRA Projekte','Kommaseparierte Liste der zu berücksichtigenden JIRA Projekte','FDC,FDH,FDSUPPORT,FDPB,FDA,FDB,FDCIT,FDNULL,FDEXTERN'),
     new Property('JiraMyActivityOnly','checkbox','Nur bearbeitete Tickets','Tickets ausblenden, die ich nicht selbst bearbeitet habe',false),
+    new Property('JiraHideMonitis','checkbox','Monitis Meldungen ausblenden','Automatisch durch das Monitoring erzeugte und inzwischen geschlossene Tickets ausblenden',false),
     //new Property('harvestEnabled','checkbox','Harvest aktivieren',' ',true),
     new Property('harvestDomain','text','Harvest Domain','Domain des FunkeDigital Harvest Accounts.','https://funke.harvestapp.com'),
     new Property('harvestAccountId','text','Harvest Account','Account-ID des FunkeDigital Harvest Accounts.','706343'),

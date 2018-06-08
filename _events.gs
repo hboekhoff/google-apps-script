@@ -11,8 +11,8 @@ function onOpen() {
               .addItem('Optionen ...', 'showPropertyDialog');
   menu.addToUi();
 
-  menu = ui.createMenu('Monitis')
-              .addItem('Recoveries aufräumen', 'startCleanupRecovered');
+  menu = ui.createMenu('Support-Board')
+              .addItem('Erledigte Tickets aufräumen', 'startCleanupJiraBoard');
   menu.addToUi();
 
   if( DEVELOPER_MODE ) DEV_createMenu();
@@ -48,6 +48,11 @@ function loadDataStep2() {
     TheHarvestConnection_v1.open('getBookings');
 }
 
-function startCleanupRecovered() {
-  TheJiraConnection.open('autoCloseRecoveredMonitisMessages');
+function startCleanupJiraBoard() {
+  TheJiraConnection.open('cleanupJiraBoard');
+}
+function cleanupJiraBoard() {
+  autoCloseRecoveredMonitisMessages();
+  autoClosePruefroutineMessages();
+  SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Log').activate();
 }

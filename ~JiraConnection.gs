@@ -93,6 +93,7 @@ Object.defineProperties(JiraConnection.prototype,{
     writable: false,
     configurable: false,
     value: function(jql, fields, expand, chunkSize) {
+    LogData(jql);
       return this.execute('api/2/search', 'get', {'jql': jql}, fields, expand, chunkSize);
     }
   },
@@ -111,7 +112,7 @@ Object.defineProperties(JiraConnection.prototype,{
     enumerable: false,
     writable: false,
     configurable: false,
-    value: function(date,projects,fields,expand) {
+    value: function(date,projects,fields,expand,andJql) {
       var d1 = new Date(date);
       var d2 = new Date(date);
       d2.setDate(d2.getDate() + 1)  ;
@@ -121,6 +122,10 @@ Object.defineProperties(JiraConnection.prototype,{
       var jql = '((updated >= ' + d1f + '  and updated < ' + d2f + ')' 
                 + ' or (worklogdate >= ' + d1f + ' and worklogdate < ' + d2f + '))'
                 + 'and project in(' + projects + ')';
+
+      if( !isUndefined(andJql) && !isEmpty(andJql) ) 
+        jql += ' and (' + andJql + ')';
+
       return this.search(jql, fields, expand, 50);
     }    
   },

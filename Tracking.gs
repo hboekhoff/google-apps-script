@@ -37,7 +37,11 @@ function getHarvestBookings(date) {
 function getJiraBookings(date) {
   clearJiraContent();
   try{
-    var issues = TheJiraConnection.fetchIssuesByChangeDate(date,Globals.Properties.get('JiraProjects').value, JiraFields, 'changelog').issues;
+    var extraJql = ( 'true' == Globals.Properties.get('JiraHideMonitis').value )?
+                    'not summary ~ "Monitis" or status != done' : null;
+
+    var issues = TheJiraConnection.fetchIssuesByChangeDate(date,Globals.Properties.get('JiraProjects').value, JiraFields, 'changelog', extraJql).issues;
+      
     var user = RequestBasicAuthentification.readCache('JIRA').username;
     if( DEVELOPER_MODE ) user = DEV_USER.JiraUserName || user;
 
