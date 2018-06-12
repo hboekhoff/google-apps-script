@@ -16,7 +16,7 @@ function autoCloseIssues(jql,message) {
   for( var cnt = 0 ; cnt < issues.length ; cnt++ ) {
     var key = issues[cnt].key;
     doTransitionEdit(key);
-    doTransitionClose(key);
+    doTransitionClose(key, message + " - Automatisch geschlossen.");
   }
   var finished = new Date();
   LogData(message, issues.length + ' Tickets aufgeräumt in ' + new Date(finished - started).format('mm:ss,SSS') + ' Minuten.', true);
@@ -37,12 +37,9 @@ function doTransitionEdit(key) {
     LogData('Error during edit-transition',{'key': key, 'message': e});
   }
 }
-function doTransitionClose(key){
+function doTransitionClose(key, comment){
   try {
-    TheJiraConnection.doTransition(key, 71, 
-                                   "Monitis Recovery - automatisch geschlossen.", 
-                                   {"resolution": {"name": "Fertig"}}
-                                  );
+    TheJiraConnection.doTransition(key, 71, comment, {"resolution": {"name": "Fertig"}});
   }
   catch(e) {
     LogData('Error during close-transition',{'key': key, 'message': e});

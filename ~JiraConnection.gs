@@ -52,8 +52,10 @@ Object.defineProperties(JiraConnection.prototype,{
       method = method || 'get';
       params = params || {};
       var maxResults = params['maxResults'];
-      params['maxResults'] = chunkSize || maxResults || 1000;
-      params['expand'] = (params['expand'] || '') + ',' + (expand || ''); //+ ',names';
+      if( method == 'get' ) {
+        params['maxResults'] = chunkSize || maxResults || 1000;
+        params['expand'] = (params['expand'] || '') + ',' + (expand || ''); //+ ',names';
+      }
 
       if( !isUndefined(fields) )
         params['fields'] = fields.names;

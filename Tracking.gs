@@ -35,7 +35,6 @@ function getHarvestBookings(date) {
 }
 
 function getJiraBookings(date) {
-  clearJiraContent();
   try{
     var extraJql = ( 'true' == Globals.Properties.get('JiraHideMonitis').value )?
                     'not summary ~ "Monitis" or status != done' : null;
@@ -46,8 +45,13 @@ function getJiraBookings(date) {
     if( DEVELOPER_MODE ) user = DEV_USER.JiraUserName || user;
 
     collectEvents(user, date, issues);
-    issues = issues.filter(function(v){return v.bookingsToday > 0 || v.aggregated != ''});
+    issues = issues.filter(function(v){return v.bookingsToday > 0 || v.aggregated != ''})
+                   .sort(function(a,b){return (a.firstEventToday < b.firstEventToday)? -1 : (a.firstEventToday > b.firstEventToday)? 1 : 0;});
+
     var oputputfields = JiraFields.getSubset('issuedata', 'key', 'summary', 'bookingsToday', 'aggregatedActions');
+
+    clearJiraContent();
+
     Output.writeTableHeader(Globals.MyTrackingSheet, Globals.REPORT_HEADER_ROW, Globals.JIRA_FIRST_COLUMN, oputputfields);
     Output.writeToTable(Globals.MyTrackingSheet, Globals.FIRST_REPORT_ROW, Globals.JIRA_FIRST_COLUMN, issues, oputputfields);
   } catch(e) {
@@ -65,8 +69,12 @@ function collectEventsForIssue(user, date, issue) {
   var collected = { bookingsToday: 0,
                     bookingsTotal: 0,
                     events: getComments(issue, user) || [],
+                    firstEvent: null,
                     assignments: []
                   };
+
+  collectCreationEvent(user, date, issue, collected);
+  
   for( var cnt = 0 ; cnt < issue.changelog.histories.length ; cnt++ ) {
     var ev = issue.changelog.histories[cnt];
     collectBookings(user, date, ev, collected);
@@ -74,34 +82,49 @@ function collectEventsForIssue(user, date, issue) {
     if( anyEvents || ( !isUndefined(ev.author) && ev.author.key == user ) )
       collectAssignmentEvents(user, date, ev, collected);
   }
-  issue.aggregated = getAggregatedString(date, collected.events, collected.assignments);
+
+  var aggregatedEvents = aggregateEvents(date, collected.events, collected.assignments);
+  issue.aggregated = makeEventString(aggregatedEvents);
   issue.bookingsToday = collected.bookingsToday;
   issue.bookingsTotal = collected.bookingsTotal;
+  issue.firstEventToday = ( isUndefined(aggregatedEvents) || aggregatedEvents.length == 0)? null : aggregatedEvents[0].time;
 }
-
+function collectCreationEvent(user, date, issue, collector) {
+  if( ( user == issue.fields.creator.name || 
+        ( !isUndefined(issue.fields.reporter) && user == issue.fields.reporter.name ) ) &&
+      isSameDay(issue.fields.created, date) ) {
+    collector.events.push({'autor':user, 
+                           'time':issue.fields.created, 
+                           'type':'created', 
+                           'description': issue.fields.description});
+  }
+}
 function collectBookings(user, date, event, collector) {
   if( isModifiedBy( event, user ) ) {
     var timespent = getTimeSpent(event);
     collector.bookingsTotal += timespent;
-    if( isSameDay(event.created, date) ) {
+      
+    if( isSameDay(event.created, date) ) 
       collector.bookingsToday += timespent;
-    }
   }
 }
 function collectStatusEvents(user, date, event, collector) {
-  if( isModifiedBy( event, user ) && 
-      isSameDay(event.created, date) ) {
+  if( isModifiedBy( event, user ) && isSameDay(event.created, date) )
     collector.events = collector.events.concat(getStatusChanges( event ));
-  }
+  
 }
 function collectAssignmentEvents(user, date, event, collector) {
   if( isSameDay(event.created, date) ) {
     for( var cnt = 0 ; cnt < event.items.length ; cnt++ ) {
       if( event.items[cnt].field == 'assignee' && 
          ( event.items[cnt].to == user || event.items[cnt].from == user ) ) {
+         
         collector.assignments.push({'time':event.created, 
                                     'type':'assign', 
                                     'description': (event.items[cnt].fromString || '') + ' → ' + event.items[cnt].toString});
+
+        if( isUndefined(collector.firstEvent) || event.created < collector.firstEvent )
+          collector.firstEvent = event.created;
       }
     }
   }
@@ -122,31 +145,40 @@ function getComments( issue, user ) {
   if( !isArray(values) ) values = [values];
   return values.filter(function(v){ return v.author == user });
 }
-function getAggregatedString(date, a1, a2 /*time:'', type: (comment|status|assign), description: '...'}, ...] */) {
-  var aggregated = aggregateEvents(date, a1, a2);
+function makeEventString(events) {
   var result = '';
-  for( var cnt = aggregated.length ; cnt-- ; result = '\n' + eventToString(aggregated[cnt]) + result );
+  for( var cnt = 0 ; cnt < events.length ; result += '\n' + eventToString(events[cnt++]) );
   return result.substring(1);
 }
 function aggregateEvents(date, a1, a2 /*time:'', type: (comment|status|assign), description: '...'}, ...] */) {
-  var actions = a1.concat(a2).filter(function(v){ return isSameDay(v.time,date);});
-  actions.sort(function(a,b){return (a.time < b.time)? -1 : (a.time > b.time)? 1 : 0;});
-  return actions;
+  var events = a1.concat(a2).filter(function(v){ return isSameDay(v.time,date);});
+  events.sort(function(a,b){return (a.time < b.time)? -1 : (a.time > b.time)? 1 : 0;});
+  return events;
 }
 function eventToString(e) {
-  var result = formatDate(e.time,'HH:mm') + ' - ';
+  var s, t;
+
   switch(e.type) {
+    case 'created':
+      s = '✰';
+      t = ((e.description.length > Globals.JIRA_COMMENT_MAX_LENGTH)? e.description.substring(0,Globals.JIRA_COMMENT_MAX_LENGTH) +  ' ...' : e.description).replace(/[\r\n\t]/g, ' ');
+      break;
     case 'comment':
-      result += ((e.description.length > Globals.JIRA_COMMENT_MAX_LENGTH)? e.description.substring(0,Globals.JIRA_COMMENT_MAX_LENGTH) +  ' ...' : e.description).replace(/[\r\n\t]/g, ' ');
+      s = '✎';
+      t = ((e.description.length > Globals.JIRA_COMMENT_MAX_LENGTH)? e.description.substring(0,Globals.JIRA_COMMENT_MAX_LENGTH) +  ' ...' : e.description).replace(/[\r\n\t]/g, ' ');
       break;
     case 'assign':
-      result += 'Zugewiesen:   ' + e.description;
+      s = '☺';
+      t = e.description;
       break;
     case 'status':
-      result += 'Statusänderung:   ' + e.description;
+      s = '↺';
+      t = e.description;
       break;
+    default:
+      s = '?';
   }
-  return result;
+  return s + ' ' + formatDate(e.time,'HH:mm') + '   ' + t;
 }
 
 function isModifiedBy(event, user) {
