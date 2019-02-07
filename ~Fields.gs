@@ -1,13 +1,12 @@
 function Fields() {
-  var arr = isArray(this)? this : [];
-  arr.push.apply(arr, arguments);
-  arr._internalMap = arr.reduce(function(m,f){
-                                  if( !isUndefined(f.name) ) 
-                                    m[f.name] = f;
-                                  return m;
-                                },{});
-  defineMissingMethods(arr,Fields.prototype);
-  return arr;
+   var fs = [];
+   for( var cnt = 0 ; cnt < arguments.length ; cnt++ ) {
+    if(isArray(arguments[cnt]) )
+      fs = fs.concat(arguments[cnt]);
+    else
+      fs.push(arguments[cnt]);
+   }
+  return initializeArrayObject(this,Fields.prototype,fs);
 }
 
 Object.defineProperties(Fields.prototype, {
@@ -39,6 +38,12 @@ Object.defineProperties(Fields.prototype, {
         var tmp = this._internalMap[names[cnt]];
         if( !isUndefined(tmp) )
           result.push(tmp);
+        else switch(names[cnt]) {
+          case 'EMPTY':
+            result.push(new Field('EMPTY','','',function(){return '';}));
+            break;
+          default:
+        }
       }
       return Fields.apply(result);
     }        

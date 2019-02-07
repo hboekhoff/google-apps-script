@@ -1,9 +1,17 @@
 var Globals = new function () {
+  function getSheet(name) {
+    return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name) ||
+           SpreadsheetApp.getActiveSpreadsheet().insertSheet(name);
+  }
+
   this.Properties = new Properties(
-    new Property('jiraDomain','text','JIRA Domain','Domain des JIRA-Systems.','https://sjira.funkemedien.de'),
-    new Property('harvestDomain','text','Harvest Domain','Domain des FunkeDigital Harvest Accounts.','https://funke.harvestapp.com'),
-    new Property('harvestAccountId','text','Harvest Account','Account-ID des FunkeDigital Harvest Accounts.','706343'),
-    new Property('harvestPrivateKey','text','Harvest Key','Authorisierungs-Schlüssel für den Zugriff auf Harvest.','')
+    new Property('JiraDomain','text','JIRA Domain','Domain des JIRA-Systems.','https://sjira.funkemedien.de'),
+    new Property('JiraProjects','text','JIRA Projekte','Kommaseparierte Liste der zu berücksichtigenden JIRA Projekte',''),
+    new Property('JiraEpics','text','JIRA Epics','Kommaseparierte Liste der zu berücksichtigenden JIRA Epics','')
   );
+  
+  this.ReportSheet = getSheet('Report');  
+  this.TrackingSheet = getSheet('Zeiterfassung');  
+  //this.TestSheet = getSheet('test');  
   
 }();

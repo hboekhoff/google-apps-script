@@ -24,6 +24,9 @@ function isDate(d) {
 }
 
 function isEmpty(obj) {
+  if( isString(obj) )
+    return obj == '';
+    
   for( var x in obj )
     return false;
   return true;

@@ -1,5 +1,5 @@
 function JiraConnection(name,auth) {
-  var jiraDomain = Globals.Properties.get('jiraDomain').value;
+  var jiraDomain = Globals.Properties.get('JiraDomain').value;
   jiraDomain += (jiraDomain.charAt(jiraDomain.length-1) == '/')? 'rest/' : '/rest/';
   this.connection = new Connection(jiraDomain);
   this.connection.name = name || 'JIRA';
@@ -52,12 +52,13 @@ Object.defineProperties(JiraConnection.prototype,{
       method = method || 'get';
       params = params || {};
       var maxResults = params['maxResults'];
-      params['maxResults'] = chunkSize || maxResults || 1000;
-      params['expand'] = (params['expand'] || '') + ',' + (expand || ''); //+ ',names';
-
+      if( method == 'get' ) {
+        params['maxResults'] = chunkSize || maxResults || 1000;
+        params['expand'] = (params['expand'] || '') + ',' + (expand || ''); //+ ',names';
+      }
       if( !isUndefined(fields) )
         params['fields'] = fields.names;
-
+LogData(params);
       var data = this.connection.execute(path, method, params);
 
       if( !isUndefined(chunkSize) ) {
@@ -93,6 +94,7 @@ Object.defineProperties(JiraConnection.prototype,{
     writable: false,
     configurable: false,
     value: function(jql, fields, expand, chunkSize) {
+    LogData(jql);
       return this.execute('api/2/search', 'get', {'jql': jql}, fields, expand, chunkSize);
     }
   },
@@ -106,12 +108,21 @@ Object.defineProperties(JiraConnection.prototype,{
       return this.search('issuekey in (' + keys + ')', fields, expand);
     }
   },
+  
+  fetchProjectIssues: {
+    enumerable: false,
+    writable: false,
+    configurable: false,
+    value: function(project, fields, expand) {
+      return this.search('project=' + project, fields, expand, 900);
+    }
+  },
     
   fetchIssuesByChangeDate: {
     enumerable: false,
     writable: false,
     configurable: false,
-    value: function(date,projects,fields,expand) {
+    value: function(date,projects,fields,expand,andJql) {
       var d1 = new Date(date);
       var d2 = new Date(date);
       d2.setDate(d2.getDate() + 1)  ;
@@ -121,6 +132,10 @@ Object.defineProperties(JiraConnection.prototype,{
       var jql = '((updated >= ' + d1f + '  and updated < ' + d2f + ')' 
                 + ' or (worklogdate >= ' + d1f + ' and worklogdate < ' + d2f + '))'
                 + 'and project in(' + projects + ')';
+
+      if( !isUndefined(andJql) && !isEmpty(andJql) ) 
+        jql += ' and (' + andJql + ')';
+
       return this.search(jql, fields, expand, 50);
     }    
   },

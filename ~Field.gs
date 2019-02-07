@@ -34,5 +34,5 @@ Object.defineProperties(Field.prototype, {
     value: function(obj){
       return this.formatFunction(this.extractValue(obj));
     }
-  }
+  }  
 });

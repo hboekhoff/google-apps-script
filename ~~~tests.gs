@@ -101,3 +101,7 @@ function testabcde() {
   Logger.log(a.internalstore());
   
 }
+
+function testdateformatting() {
+Logger.log(new Date('2017-09-08T10:11:55').getYear());
+}

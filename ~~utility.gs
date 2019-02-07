@@ -1,3 +1,16 @@
+function initializeArrayObject(obj,prototype,args) {
+  var arr = isArray(obj)? obj : [];
+  if( !isUndefined(args) ) 
+    arr.push.apply(arr, args);
+    
+  arr._internalMap = arr.reduce(function(m,f){
+                                  if( !isUndefined(f.name) ) 
+                                    m[f.name] = f;
+                                  return m;
+                                },{});
+  defineMissingMethods(arr,prototype);
+  return arr;
+}
 function defineMissingMethods(dest,src) {
   var sp = Object.getOwnPropertyNames(src);
   var dp = Object.getOwnPropertyNames(dest);
