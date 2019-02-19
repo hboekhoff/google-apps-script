@@ -1,17 +1,16 @@
 function updateProjectReport() {
   var epics = getProjectData(Globals.Properties.get('JiraProjects').value, 
                              Globals.Properties.get('JiraEpics').value);
-
   updateReportSheet(epics);
   updateTrackingSheet(collectBookingData(epics));
 }
 
 function getProjectData(projects, epicKeys) {
-  var fields = JiraFields.getSubset('project','key','summary','assignee','status','aggregatetimeestimate','aggregatetimespent','worklog', 'customfield_10705', 'customfield_10706');
+  var fields = JiraFields.getSubset('project','key','summary','assignee','status','aggregatetimeoriginalestimate','aggregatetimespent','worklog', 'customfield_10705', 'customfield_10706');
   var epics = getEpics(projects, epicKeys, fields);
 
   for( var cnt = 0 ; cnt < epics.length ; cnt++ ) 
-    epics[cnt].connectedIssues = getTicketsForEpic(epics[cnt].key,fields);
+    epics[cnt].connectedIssues = getTicketsForEpic(epics[cnt].key,fields).sort(function(a, b){ return a.key>b.key? 1 : a.key<b.key? -1 : 0;});
 
   return epics;
 }
@@ -32,11 +31,11 @@ function getEpics(projects, epicKeys, fields) {
                        var ix = keys.indexOf(issue.key);
                        if(ix >= 0) keys.splice(ix,1);
                      });
-      if( keys.length > 0  != '' )
+      if( keys.length > 0 )
         issues = issues.concat(TheJiraConnection.search("issuekey in (" + keys.join(',') + ") and issuetype=epos", fields).issues);
     }
   }
-  return issues;
+  return issues.sort(function(a, b){ return a.key>b.key? 1 : a.key<b.key? -1 : 0;});
 }
 
 function getTicketsForEpic(epic, fields) {
@@ -44,11 +43,10 @@ function getTicketsForEpic(epic, fields) {
   return issues;
 }
 
-
-
 function collectBookingData(epics) {
   var bookings = new BookingSummary();
   for ( var cnt = 0 ; cnt < epics.length ; cnt++ ) {
+    bookings.addWorklog(epics[cnt], epics[cnt] );
     bookings.addWorklogs(epics[cnt].connectedIssues, epics[cnt] );
   }
   return bookings;
@@ -56,7 +54,7 @@ function collectBookingData(epics) {
 
 function updateReportSheet(epics) {
   var epicDisplayFields = JiraFields.getSubset('key','EMPTY', 'summary','assignee','status');
-  var subTicketDisplayFields = JiraFields.getSubset('EMPTY', 'key','summary','assignee','status','aggregatetimeestimate','aggregatetimespent');
+  var subTicketDisplayFields = JiraFields.getSubset('EMPTY', 'key','summary','assignee','status','aggregatetimeoriginalestimate','aggregatetimespent');
 
   Globals.ReportSheet.clearContents();
   Output.writeTableHeader(Globals.ReportSheet,1,1,subTicketDisplayFields);
@@ -65,9 +63,8 @@ function updateReportSheet(epics) {
   var rowCount = 2;
   for( var cnt = 0 ; cnt < epics.length ; cnt++ ) {
     if( epics[cnt].connectedIssues.length > 0 ) {
-      writeEpicLine(rowCount++,epics[cnt],epicDisplayFields);
-      Output.writeToTable(Globals.ReportSheet,rowCount,1,epics[cnt].connectedIssues,subTicketDisplayFields);
-      rowCount += epics[cnt].connectedIssues.length + 1;
+      rowCount += writeEpicHeader(rowCount,epics[cnt],epicDisplayFields);
+      rowCount += writeTicketLines(rowCount,epics[cnt],subTicketDisplayFields) + 1;
     }
   }
 }
@@ -88,9 +85,15 @@ function updateTrackingSheet(bookings) {
   }
 }
 
-function writeEpicLine(row, epic, fields) {
+function writeEpicHeader(row, epic, fields) {
   Output.writeToTable(Globals.ReportSheet,row,1,[epic],fields);
-  Globals.ReportSheet.getRange(row,fields.length+1,1,2).setFormulaR1C1("=sum(R[1]C:R[" + epic.connectedIssues.length + "]C)");
+  Globals.ReportSheet.getRange(row,fields.length+1,1,2).setFormulaR1C1("=sum(R[1]C:R[" + (epic.connectedIssues.length+1) + "]C)");
+  return 1;
+}
+function writeTicketLines(row,epic,fields) {
+  Output.writeToTable(Globals.ReportSheet,row,1,[epic],fields);
+  Output.writeToTable(Globals.ReportSheet,++row,1,epic.connectedIssues,fields);
+  return epic.connectedIssues.length + 1;
 }
 
 

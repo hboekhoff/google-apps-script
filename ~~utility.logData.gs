@@ -15,8 +15,9 @@ function LogData() {
       return {key:args[0],data:args[1],sheet:args[2],force:undefined};
   }
   function getLoggingSheet() {
-    return SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Log') ||
-           SpreadsheetApp.getActiveSpreadsheet().insertSheet('Log');
+    return (SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Log') ||
+            SpreadsheetApp.getActiveSpreadsheet().insertSheet('Log') )
+           .setTabColor('000000');
   }
   
   var args = resolveArguments(arguments);
